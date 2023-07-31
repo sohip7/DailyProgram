@@ -13,7 +13,7 @@
         </div>
     @endif
     <h1>إضافة دفعة من زبون</h1>
-    <form action="" method="post">
+    <form action="{{route('CustomerPay.store')}}" method="post">
         @csrf
         <div class="form-group">
             <label for="CustomerName">اسم الزبون:</label>

@@ -5,20 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class dailydata extends Model
+class PlatformBalance extends Model
 {
     use HasFactory;
-    protected $table="dailydata";
+
+    protected $table="platformbalance";
     protected $fillable = [
         'id',
-        'item',
-        'amount',
-        'quantity',
+        'OoredooBalance',
+        'JawwalBalance',
+        'JawwalPayBalance',
+        'ElectricityBalance',
+        'OoredooBillsBalance',
+        'BalanceType',
         'notes',
         'created_at',
-        'user_name',
-        'total',
+        'userName',
     ];
     public $timestamps=false;
-
 }
+
+

@@ -5,20 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class dailydata extends Model
+class Outs extends Model
 {
     use HasFactory;
-    protected $table="dailydata";
+
+    protected $table="outs";
     protected $fillable = [
         'id',
         'item',
         'amount',
-        'quantity',
         'notes',
         'created_at',
-        'user_name',
-        'total',
+        'userName',
     ];
     public $timestamps=false;
-
 }

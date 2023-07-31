@@ -5,20 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class dailydata extends Model
+class DealersBuy extends Model
 {
     use HasFactory;
-    protected $table="dailydata";
+
+    protected $table="dealersbuy";
     protected $fillable = [
         'id',
         'item',
         'amount',
-        'quantity',
+        'SellerName',
         'notes',
         'created_at',
-        'user_name',
-        'total',
+        'UserName',
     ];
     public $timestamps=false;
-
 }

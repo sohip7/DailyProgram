@@ -7,8 +7,13 @@
 </head>
 <body>
 <div class="container">
+    @if(Session::has('success'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('success') }}
+        </div>
+    @endif
     <h1>إضافة مشتريات جديد</h1>
-    <form action="" method="post">
+    <form action="{{route('DealerBuy.store')}}" method="post">
         @csrf
         <div class="form-group">
             <label for="item_name">البيان:</label>

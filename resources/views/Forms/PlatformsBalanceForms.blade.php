@@ -7,18 +7,31 @@
 </head>
 <body>
 <div class="container">
+    @if(Session::has('success'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('success') }}
+        </div>
+    @endif
     <h1>إدخال أرصدة محطات الشحن</h1>
-    <form action="" method="post">
+    <form action="{{route('PlatformBalance.store')}}" method="post">
         @csrf
 
         <div class="form-group">
-            <label for="AhlanMobBalance">رصيد أهلاً موبايل:</label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="AhlanMobBalance" name="AhlanMobBalance" required>
+            <label for="BalanceType"> نوع الإدخال</label>
+            <select id="BalanceType" name="BalanceType" required>
+                <option value="افتتاحي">افتتاحي</option>
+                <option value="نهائي">نهائي</option>
+            </select>
         </div>
 
         <div class="form-group">
-            <label for="amount">رصيد جوال:</label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="amount" name="amount" required>
+            <label for="OoredooBalance">رصيد أوريدوا:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBalance" name="OoredooBalance" required>
+        </div>
+
+        <div class="form-group">
+            <label for="JawwalBalance">رصيد جوال:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="JawwalBalance" name="JawwalBalance" required>
         </div>
 
         <div class="form-group">
@@ -35,6 +48,7 @@
             <label for="OoredooBillsBalance">رصيد أوريدوا الفواتير:</label>
             <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBillsBalance" name="OoredooBillsBalance" required>
         </div>
+
 
         <div class="form-group">
             <label for="notes">ملاحظات:</label>

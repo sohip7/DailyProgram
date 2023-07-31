@@ -7,8 +7,13 @@
 </head>
 <body>
 <div class="container">
+    @if(Session::has('success'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('success') }}
+        </div>
+    @endif
     <h1>إضافة مُخرج جديد</h1>
-    <form action="" method="post">
+    <form action="{{route('Outs.store')}}" method="post">
         @csrf
         <div class="form-group">
             <label for="item_name">البيان</label>

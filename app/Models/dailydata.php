@@ -11,6 +11,7 @@ class dailydata extends Model
     protected $table="dailydata";
     protected $fillable = [
         'id',
+        'RecordType',
         'item',
         'amount',
         'quantity',

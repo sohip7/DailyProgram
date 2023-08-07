@@ -36,22 +36,26 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <!-- Left Side Of Navbar -->
+
                         <!-- قائمة المنسدلة -->
                         <li class="nav-item dropdown">
                             <a  class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 قائمة العمليات
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+
+                            <div style="text-align: center" class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a  class="dropdown-item" href="{{ url('DailyForms/SalesForm') }}">إدخال مبيعات جديدة</a>
                                 <a  class="dropdown-item" href="{{ url('DailyForms/CustomersPaymentForm') }}">إدخال دفعات جديدة من زبائن</a>
                                 <a  class="dropdown-item" href="{{ url('DailyForms/OutForm') }}">إدخال مخرجات جديدة</a>
                                 <a  class="dropdown-item" href="{{ url('DailyForms/LendForm') }}">إدخال دَين جديد</a>
                                 <a  class="dropdown-item" href="{{ url('DailyForms/DealersBuyForm') }}">إدخال مشتريات جديد</a>
                                 <a  class="dropdown-item" href="{{ url('DailyForms/PlatformBalance') }}">إدخال رصيد المحطات </a>
+                                <a  class="dropdown-item" href="{{ route('DailyNotesForm') }}">إدخال ملاحظات لليومية </a>
                                 <!-- إضافة المزيد من الروابط حسب الحاجة -->
                             </div>
                         </li>
                     </ul>
+
                     <ul class="navbar-nav">
                         <!-- Left Side Of Navbar -->
                         <!-- قائمة المنسدلة -->
@@ -59,13 +63,17 @@
                             <a  class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 عرض حركات التسجيل
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <div style="text-align: center" class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a  class="dropdown-item" href="{{ route('sales.show') }}">عرض حركات تسجيل مبيعات "أصناف"</a>
                                 <a  class="dropdown-item" href="{{ route('CustomerPay.show') }}">عرض حركات تسجيل دفعات الزبائن </a>
                                 <a  class="dropdown-item" href="{{ route('Loans.show') }}">عرض حركات تسجيل الديون الجديدة </a>
                                 <a  class="dropdown-item" href="{{ route('Outs.show') }}">عرض حركات تسجيل المخرجات "المصروفات"</a>
                                 <a  class="dropdown-item" href="{{ route('Purchases.show') }}">عرض حركات تسجيل مشتريات</a>
                                 <a  class="dropdown-item" href="{{ route('PlatformBalance.show') }}">عرض أرصدة منصات الشحن المسجلة</a>
+                                <a  class="dropdown-item" href="{{ route('BalanceSales.show') }}">عرض مبيعات الرصيد</a>
+                                <a  class="dropdown-item" href="{{ route('DailySummary.show') }}">عرض ملخص اليومية </a>
+                                <a  class="dropdown-item" href="{{ route('DailyNotes.show') }}">عرض ملاحظات اليومية </a>
+
 
                                 <!-- إضافة المزيد من الروابط حسب الحاجة -->
                             </div>

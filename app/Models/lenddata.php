@@ -13,9 +13,11 @@ class lenddata extends Model
     protected $table="lenddata";
     protected $fillable = [
         'id',
+        'RecordType',
         'item',
         'amount',
         'quantity',
+        'FirstPay',
         'notes',
         'debtorName',
         'created_at',

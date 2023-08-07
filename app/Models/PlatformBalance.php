@@ -17,6 +17,8 @@ class PlatformBalance extends Model
         'JawwalPayBalance',
         'ElectricityBalance',
         'OoredooBillsBalance',
+        'BankOfPalestineBalance',
+        'BankAlQudsBalance',
         'BalanceType',
         'notes',
         'created_at',

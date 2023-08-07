@@ -11,6 +11,12 @@
 
 <div class="container">
 
+    @if(Session::has('success'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('success') }}
+        </div>
+    @endif
+
     <!-- رابط مكتبة jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -55,11 +61,14 @@
         <thead>
         <tr>
             <th>الرقم</th>
+            <th>نوع المخرج</th>
             <th>الصنف</th>
             <th>المبلغ</th>
+            <th>مُخرج إلى</th>
             <th>الملاحظات</th>
             <th>وقت التسجيل</th>
             <th>بواسطة المستخدم</th>
+            <th>الاجراءات</th>
 
         </tr>
         </thead>
@@ -69,26 +78,37 @@
             <tr>
 
                 <th scope="row">{{$out -> id}}</th>
+                <td>{{ $out-> RecordType}}</td>
                 <td>{{ $out-> item}}</td>
                 <td>{{$out -> amount}}₪</td>
+                <td>{{$out -> beneficiary}}</td>
                 <td>{{$out -> notes}}</td>
                 <td>{{$out -> created_at}}</td>
                 <td>{{$out -> userName}}</td>
 
                 <!--   <td><img  style="width: 90px; height: 90px;" src=""></td>-->
 
-                <!--<td>
-{{--                    <a href="{{url('offers/edit/'.$offer -> id)}}" class="btn btn-success"> {{__('messages.update')}}</a>--}}
-                {{--                    <a href="{{route('offers.delete',$offer -> id)}}" class="btn btn-danger"> {{__('messages.delete')}}</a>--}}
-                </td>-->
+                <td style="display: flex " >
+                    <a  href="{{route('Outs.edit',$out->id)}}" class="btn btn-success">تعديل الصف</a>
+                    <a onclick="confirmDelete('{{route('Outs.Delete',$out->id)}}')" class="btn btn-danger"> حذف الصف</a>
+                </td>
 
             </tr>
         @endforeach
-
+        <script>
+            function confirmDelete(deleteUrl) {
+                if (confirm("هل أنت متأكد من رغبتك في حذف الصف؟")) {
+                    window.location.href = deleteUrl;
+                } else {
+                }
+            }
+        </script>
         </tbody>
     </table>
     <div class="text-box">
-        <p> إجمالي مبيعات اليومية "أصناف" هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
+        <p> :إجمالي المخرجات  هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
+        <a href="{{ route('OutsForm') }}" class="btn btn-primary">إضافة جديد</a>
+
     </div>
 </div>
 </body>

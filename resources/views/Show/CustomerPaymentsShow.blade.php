@@ -10,7 +10,13 @@
 <body>
 <div class="container">
 
-    <div class="container">
+
+
+        @if(Session::has('success'))
+            <div class="alert alert-success" role="alert">
+                {{ Session::get('success') }}
+            </div>
+        @endif
 
         <!-- رابط مكتبة jQuery -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -61,6 +67,7 @@
                 <th>الملاحظات</th>
                 <th>وقت التسجيل</th>
                 <th>بواسطة المستخدم</th>
+                <th> الاجراءات</th>
             </tr>
             </thead>
             <tbody>
@@ -75,20 +82,32 @@
                     <td>{{$CusPay -> userName}}</td>
 
 
-                    <!--<td>
-{{--                    <a href="{{url('offers/edit/'.$offer -> id)}}" class="btn btn-success"> {{__('messages.update')}}</a>--}}
-                    {{--                    <a href="{{route('offers.delete',$offer -> id)}}" class="btn btn-danger"> {{__('messages.delete')}}</a>--}}
-                    </td>-->
+                    <td style="display: flex ; " >
+                        <a href="{{route('CustomerPayment.edit',$CusPay->id)}}" class="btn btn-success">تعديل الصف</a>
+                        <a onclick="confirmDelete('{{route('CustomerPayment.Delete',$CusPay->id)}}')" class="btn btn-danger"> حذف الصف</a>
+                    </td>
 
                 </tr>
             @endforeach
+
+            <script>
+                function confirmDelete(deleteUrl) {
+                    if (confirm("هل أنت متأكد من رغبتك في حذف الصف؟")) {
+                        window.location.href = deleteUrl;
+                    } else {
+                    }
+                }
+            </script>
+
             </tbody>
         </table>
         <div class="text-box">
-            <p> إجمالي مبيعات اليومية "أصناف" هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
+            <p> "إجمالي دفعات الزبائن هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
+            <a href="{{ route('CustomersPaymentForm') }}" class="btn btn-primary">إضافة جديد</a>
+
         </div>
     </div>
-</div>
+
 </body>
 </html>
 

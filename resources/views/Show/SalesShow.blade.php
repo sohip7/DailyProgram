@@ -62,6 +62,7 @@
         <thead>
         <tr>
             <th>الرقم</th>
+            <th>نوع العملية</th>
             <th>الصنف</th>
             <th>المبلغ</th>
             <th>الكمية</th>
@@ -79,6 +80,7 @@
             <tr>
 
                 <th scope="row">{{$sale -> id}}</th>
+                <td>{{ $sale-> RecordType}}</td>
                 <td>{{ $sale-> item}}</td>
                 <td>{{$sale -> amount}}₪</td>
                 <td>{{$sale -> quantity}}</td>
@@ -100,19 +102,20 @@
         <script>
             function confirmDelete(deleteUrl) {
                 if (confirm("هل أنت متأكد من رغبتك في حذف الصف؟")) {
-                    // في حالة الموافقة على الحذف، قم بتوجيه المستخدم إلى الرابط المحدد للحذف
                     window.location.href = deleteUrl;
                 } else {
-                    // في حالة الرفض، لا تفعل أي شيء
                 }
             }
         </script>
 
         </tbody>
     </table>
-    <div class="text-box">
+    <div  class="text-box">
         <p> إجمالي مبيعات اليومية "أصناف" هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
+        <a href="{{ route('SalesForm') }}" class="btn btn-primary">إضافة جديد</a>
     </div>
+
+
 </div>
 </body>
 </html>

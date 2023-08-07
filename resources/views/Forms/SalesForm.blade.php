@@ -12,9 +12,31 @@
             {{ Session::get('success') }}
         </div>
     @endif
+
+        @if(Session::has('x'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('x') }}
+        </div>
+    @endif
     <h1>إضافة صنف جديد</h1>
     <form class="form-group" action="{{route('sales.store')}}" method="post">
         @csrf
+
+        <div class="custom-select">
+            نوع العملية:
+            <select id="RecordType" name="RecordType" >
+
+                <option value="General" selected>مبيعات عامة </option>
+                <option value="Ooredoo" >رصيد أوريدوا </option>
+                <option value="Jawwal" >رصيد جوال </option>
+                <option value="OoredooBills">تسديد فاتورة أوريدوا </option>
+                <option value="JawwalPay">شحن جوال باي</option>
+                <option value="Electricity"> رصيد كهرباء</option>
+                <!-- يمكنك إضافة المزيد من الخيارات هنا -->
+            </select>
+        </div>
+
+
         <div class="form-group">
             <label for="item_name">اسم الصنف:</label>
             <input  placeholder="أدخل اسم الصنف الذي تم بيعه" type="text" id="item_name" name="item_name" required>

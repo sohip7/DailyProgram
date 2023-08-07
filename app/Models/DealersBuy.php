@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DealersBuy extends Model
 {
@@ -12,6 +13,7 @@ class DealersBuy extends Model
     protected $table="dealersbuy";
     protected $fillable = [
         'id',
+        'RecordType',
         'item',
         'amount',
         'SellerName',

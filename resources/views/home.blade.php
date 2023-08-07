@@ -17,6 +17,7 @@
             <a href="{{url('DailyForms\CustomersPaymentForm')}}" class="btn">إدخال دفعة من زبون </a>
             <a href="{{url('DailyForms\LendForm')}}" class="btn">إدخال دَين جديد</a>
             <a href="{{url('DailyForms\DealersBuyForm')}}" class="btn">إدخال مشتريات </a>
+            <a href="{{url('DailyForms\PlatformsBalanceForms')}}" class="btn">إدخال أرصدة محطات الشحن </a>
 
 
 

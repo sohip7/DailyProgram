@@ -72,3 +72,31 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+.custom-select {
+    display: inline-block;
+    position: relative;
+    font-family: 'Cairo', sans-serif;
+}
+
+.custom-select select {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f1f1f1;
+}
+a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #f44336;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+a:hover {
+    background-color: #da190b;
+}

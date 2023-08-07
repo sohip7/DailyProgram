@@ -49,6 +49,16 @@
             <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBillsBalance" name="OoredooBillsBalance" required>
         </div>
 
+        <div class="form-group">
+            <label for="BankOfPalestineBalance">رصيد بنك فلسطين:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="BankOfPalestineBalance" name="BankOfPalestineBalance" required>
+        </div>
+
+        <div class="form-group">
+            <label for="BankAlQudsBalance">رصيد بنك القدس:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="BankAlQudsBalance" name="BankAlQudsBalance" required>
+        </div>
+
 
         <div class="form-group">
             <label for="notes">ملاحظات:</label>

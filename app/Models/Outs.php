@@ -14,6 +14,8 @@ class Outs extends Model
         'id',
         'item',
         'amount',
+        'RecordType',
+        'beneficiary',
         'notes',
         'created_at',
         'userName',

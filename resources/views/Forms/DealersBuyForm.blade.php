@@ -15,10 +15,22 @@
     <h1>إضافة مشتريات جديد</h1>
     <form action="{{route('DealerBuy.store')}}" method="post">
         @csrf
+        <div class="custom-select">
+            نوع العملية:
+            <select id="RecordType" name="RecordType">
+                <option value="General" selected>مشتريات عامة </option>
+                <option value="Ooredoo">رصيد أوريدوا </option>
+                <option value="Jawwal">رصيد جوال </option>
+                <option value="OoredooBills"> فواتير أوريدوا </option>
+                <option value="JawwalPay"> جوال باي</option>
+                <option value="Electricity"> كهرباء</option>
+            </select>
+        </div>
         <div class="form-group">
             <label for="item_name">البيان:</label>
             <input  placeholder="ما هو الذي تم شراءه ؟" type="text" id="item_name" name="item_name" required>
         </div>
+
 
         <div class="form-group">
             <label for="amount">المبلغ:</label>

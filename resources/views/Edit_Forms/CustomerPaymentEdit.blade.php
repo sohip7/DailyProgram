@@ -16,6 +16,15 @@
     <form class="form-group" action="{{route('CustomerPayment.Update',$CusPay->id)}}" method="post">
         @csrf
 
+        <div class="custom-select">
+            طريقة الدفع:
+            <select id="PayMethod" name="PayMethod">
+                <option @if($CusPay->PayMethod === 'Cash') selected @endif value="Cash" >كاش </option>
+                <option @if($CusPay->PayMethod === 'BankOfPalestine') selected @endif value="BankOfPalestine">بنك فلسطين </option>
+                <option @if($CusPay->PayMethod === 'BankQuds') selected @endif value="BankQuds">بنك القدس</option>
+                <option @if($CusPay->PayMethod === 'JawwalPay') selected @endif value="JawwalPay">جوال باي </option>
+            </select>
+        </div>
         <div class="form-group">
             <label for="CustomerName">اسم الزبون:</label>
             <input  placeholder="أدخل اسم الزبون الذي دفع" type="text" id="CustomerName" name="CustomerName" required value="{{$CusPay->CustomerName}}">

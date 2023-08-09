@@ -16,7 +16,7 @@
     <form action="{{route('PlatformBalance.store')}}" method="post">
         @csrf
 
-        <div class="form-group">
+        <div class="form-group custom-select">
             <label for="BalanceType"> نوع الإدخال</label>
             <select id="BalanceType" name="BalanceType" required>
                 <option value="افتتاحي">افتتاحي</option>

@@ -15,6 +15,15 @@
     <h1>إضافة دفعة من زبون</h1>
     <form action="{{route('CustomerPay.store')}}" method="post">
         @csrf
+        <div class="custom-select">
+            طريقة الدفع:
+            <select id="PayMethod" name="PayMethod">
+                <option value="Cash" selected>كاش </option>
+                <option value="BankOfPalestine">بنك فلسطين </option>
+                <option value="BankQuds">بنك القدس</option>
+                <option value="JawwalPay">جوال باي </option>
+            </select>
+        </div>
         <div class="form-group">
             <label for="CustomerName">اسم الزبون:</label>
             <input  placeholder="أدخل اسم الزبون الذي دفع" type="text" id="CustomerName" name="CustomerName" required>

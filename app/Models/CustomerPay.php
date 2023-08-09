@@ -14,6 +14,7 @@ class CustomerPay extends Model
         'id',
         'CustomerName',
         'amount',
+        'PayMethod',
         'notes',
         'created_at',
         'userName',

@@ -40,13 +40,20 @@ class CreateDailyRecord extends Command
     {
         balance_sale::create([
             'ooredoo' => 0,
+            'ooredooin' => 0,
             'jawwal' => 0,
+            'jawwalin' => 0,
             'jawwalpay' => 0,
+            'jawwalpayin' => 0,
             'electricity' => 0,
+            'electricityin' => 0,
             'ooredoobills' => 0,
+            'ooredoobillsin' => 0,
             'firstpay' => 0,
             'bop' => 0,
+            'bopin' => 0,
             'bankquds' => 0,
+            'bankqudsin' => 0,
         ]);
 
         $this->info('Daily record created successfully.');

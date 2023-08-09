@@ -22,6 +22,7 @@
                 <option  value="General" >مخرجات عامة </option>
                 <option  value="bankOfPalestine" >بنك فلسطين </option>
                 <option value="bankquds" > بنك القدس </option>
+                <option value="jawwalpay" > جوال باي </option>
 
             </select>
         </div>

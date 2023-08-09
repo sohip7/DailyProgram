@@ -13,14 +13,22 @@ class balance_sale extends Model
     protected $fillable = [
         'id',
         'ooredoo',
+        'ooredooin',
         'jawwal',
+        'jawwalin',
         'jawwalpay',
+        'jawwalpayin',
         'ooredoobills',
+        'ooredoobillsin',
         'electricity',
+        'electricityin',
         'firstpay',
         'bop',
+        'bopin',
         'bankquds',
+        'bankqudsin',
         'updated_at',
+        'notes',
     ];
 
 

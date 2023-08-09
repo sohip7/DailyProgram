@@ -51,6 +51,7 @@
                                 <a  class="dropdown-item" href="{{ url('DailyForms/DealersBuyForm') }}">إدخال مشتريات جديد</a>
                                 <a  class="dropdown-item" href="{{ url('DailyForms/PlatformBalance') }}">إدخال رصيد المحطات </a>
                                 <a  class="dropdown-item" href="{{ route('DailyNotesForm') }}">إدخال ملاحظات لليومية </a>
+                                <a  class="dropdown-item" href="{{ route('payToMerchantForm') }}">دفع إلى تاجر </a>
                                 <!-- إضافة المزيد من الروابط حسب الحاجة -->
                             </div>
                         </li>

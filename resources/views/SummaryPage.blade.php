@@ -29,7 +29,7 @@
             <h5 class="card-title text-info">{{$OoredooEnd}} شيكل</h5>
             <p class="card-text"> التفاصيل: <br>
                   الرصيد الافتتاحي : {{ $openbalance->OoredooBalance }} <br>
-                 الرصيد المشترى : {{ $TotalOoredooBuyDealer }} <br>
+                 الرصيد المشترى : {{ $Balancein->ooredooin }} <br>
                  الرصيد المباع: {{ $balancsales->ooredoo }}
              <br>  ديون أرصدة أوريدوا:    {{ $totalOoredooLoan }}
             </p>
@@ -41,7 +41,7 @@
             <h5 class="card-title text-info">{{$JawwalEnd}} شيكل </h5>
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->JawwalBalance }} <br>
-                الرصيد المشترى : {{ $TotalJawwalBuyDealer }} <br>
+                الرصيد المشترى : {{ $Balancein->jawwalin }} <br>
                 الرصيد المباع: {{ $balancsales->jawwal }}
                 <br>  ديون أرصدة جوال:    {{ $totalJawwalLoan }}
             </p>
@@ -53,7 +53,8 @@
             <h5 class="card-title text-info">{{$JawwalpayEnd}} شيكل</h5>
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->JawwalPayBalance }} <br>
-                الرصيد المشترى : {{ $TotalJawwalPayBuyDealer }} <br>
+                الرصيد المشترى فقط  : {{ $TotalJawwalPayBuyDealer }} <br>
+                الرصيد الداخل مع المشترى  : {{ $Balancein->jawwalpayin }} <br>
                 الرصيد المباع: {{ $balancsales->jawwalpay }}
                 <br>  ديون أرصدة جوال باي:    {{ $totalJawwalPayLoan }}
             </p>
@@ -65,7 +66,7 @@
             <h5 class="card-title text-info">{{$OoredooBillsEnd}} شيكل </h5>
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->OoredooBillsBalance }} <br>
-                الرصيد المشترى : {{ $TotalOoredooBillsBuyDealer }} <br>
+                الرصيد المشترى : {{ $Balancein->ooredoobillsin  }} <br>
                 الرصيد المباع: {{ $balancsales->ooredoobills }}
                 <br>  ديون فواتير أوريدوا:    {{ $totalOoredooBillsLoan }}
             </p>
@@ -77,7 +78,7 @@
             <h5  class="card-title text-info ">{{$ElectricityEnd}} شيكل </h5>
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->ElectricityBalance }} <br>
-                الرصيد المشترى : {{ $TotalElectricityBuyDealer }} <br>
+                الرصيد المشترى : {{ $Balancein->electricityin }} <br>
                 الرصيد المباع: {{ $balancsales->electricity }}
                 <br>  ديون أرصدة الكهرباء:    {{ $totalElectricityLoan }}
             </p>
@@ -89,6 +90,7 @@
             <h5 class="card-title text-info">{{$BopEnd}} شيكل </h5>
             <p class="card-text">التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->BankOfPalestineBalance }}<br>
+                الرصيد الداخل : {{ $Balancein->bopin }}<br>
                 الرصيد المُخرج: {{ $balancsales->bop }}
             </p>
         </div>
@@ -99,10 +101,40 @@
             <h5 class="card-title text-info">{{$BankQudsEnd}} شيكل </h5>
             <p class="card-text">التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->BankAlQudsBalance }}<br>
+                الرصيد الداخل : {{ $Balancein->bankqudsin }}<br>
                 الرصيد المُخرج: {{ $balancsales->bankquds }}
             </p>
         </div>
     </div>
+
+<!-- General Info-->
+        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-header">إجمالي دفعات من الزبائن</div>
+            <div class="card-body">
+                <h5  class="card-title text-info ">{{$TotalCustPay}} شيكل </h5>
+                <p class="card-text"> التفاصيل: <br>
+
+                </p>
+            </div>
+        </div>
+        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-header">إجمالي مبيعات اليوم</div>
+            <div class="card-body">
+                <h5 class="card-title text-info">{{$TotalSales}} شيكل </h5>
+                <p class="card-text">التفاصيل: <br>
+
+                </p>
+            </div>
+        </div>
+        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+            <div class="card-header">إجمالي مشتريات اليوم</div>
+            <div class="card-body ">
+                <h5 class="card-title text-info">{{$TotalBuy}} شيكل </h5>
+                <p class="card-text">التفاصيل: <br>
+
+                </p>
+            </div>
+        </div>
 
 
 </div>

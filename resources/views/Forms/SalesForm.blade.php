@@ -27,6 +27,7 @@
             <select id="RecordType" name="RecordType" >
 
                 <option value="General" selected>مبيعات عامة </option>
+                <!--<option value="OoreodooSim" >شريحة أوريدوا </option>-->
                 <option value="Ooredoo" >رصيد أوريدوا </option>
                 <option value="Jawwal" >رصيد جوال </option>
                 <option value="OoredooBills">تسديد فاتورة أوريدوا </option>

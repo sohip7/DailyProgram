@@ -61,6 +61,11 @@ Route::group(['prefix'=> 'DailyForms' , 'middleware'=>'auth'], function (){
     Route::Post('StoreLend', 'App\Http\Controllers\DailyController@StoreLend')->name('Lends.store');
 
 
+
+    Route::get('payToMerchantForm', 'App\Http\Controllers\DailyController@payToMerchantForm')->name('payToMerchantForm');
+    Route::Post('StorePaytoMerchant', 'App\Http\Controllers\DailyController@store_pay_to_merchant')->name('payToMerchant.store');
+
+
     Route::get('DealersBuyForm', 'App\Http\Controllers\DailyController@DealersBuyForm')->name('DealersBuyForm');
     Route::post('StoreDealersBuy', 'App\Http\Controllers\DailyController@StoreDealersBuy')->name('DealerBuy.store');
 

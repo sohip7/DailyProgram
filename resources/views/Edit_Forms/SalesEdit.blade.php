@@ -12,15 +12,23 @@
             {{ Session::get('success') }}
         </div>
     @endif
+        @if(Session::has('Error'))
+        <div class="alert alert-danger" role="alert">
+            {{ Session::get('Error') }}
+        </div>
+    @endif
     <h1>تعديل صنف مبيعات</h1>
-    <form class="form-group" action="{{route('Sales.Update',$Sales->id)}}" method="post">
+        <h6 class="text-danger"> <span style="font-size: 20px" class="required-label"> </span>   تشير إلى أن الحقل مطلوب</h6>
+
+        <form class="form-group" action="{{route('Sales.Update',$Sales->id)}}" method="post">
         @csrf
 
         <div class="custom-select">
             نوع العملية:
-            <select id="RecordType" name="RecordType" >
+            <select id="RecordType" name="RecordType"  >
 
                 <option @if($Sales->RecordType === 'General') selected @endif value="General" >مبيعات عامة </option>
+                <option @if($Sales->RecordType === 'OoredooSim') selected @endif value="OoredooSim" >شريحة أوريدوا </option>
                 <option @if($Sales->RecordType === 'Ooredoo') selected @endif value="Ooredoo" >رصيد أوريدوا </option>
                 <option @if($Sales->RecordType === 'Jawwal') selected @endif value="Jawwal" >رصيد جوال </option>
                 <option @if($Sales->RecordType === 'OoredooBills') selected @endif value="OoredooBills">تسديد فاتورة أوريدوا </option>
@@ -29,6 +37,7 @@
                 <!-- يمكنك إضافة المزيد من الخيارات هنا -->
             </select>
         </div>
+
 
         <div class="form-group">
             <label for="item_name">اسم الصنف:</label>
@@ -44,6 +53,14 @@
             <label for="quantity">الكمية:</label>
             <input type="number" id="quantity" name="quantity" value="{{$Sales->quantity}}" >
         </div>
+        @if($loans_ooredooSim)
+        <div @if($loans_ooredooSim) style="display: block"  @endif id="actP" class="form-group" style="display: none" >
+            <label for="ActivePrice">رسوم التفعيل:</label>
+            <input type="number" id="ActivePrice" name="ActivePrice"  value="{{$loans_ooredooSim->amount}}" >
+        </div>
+        @endif
+
+
 
         <div class="form-group">
             <label for="notes">ملاحظات:</label>
@@ -56,6 +73,7 @@
 
         <button type="submit">حفظ</button>
     </form>
+
 
 </div>
 

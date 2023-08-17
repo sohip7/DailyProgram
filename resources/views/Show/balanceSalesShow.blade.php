@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <!DOCTYPE html>
-<html>
+
 <head>
 
 
@@ -52,34 +51,42 @@
     </script>
 
 
-    <h1>بيانات الارصدة المباعة خلال يوم {{ $date }}</h1>
-    <table dir="rtl">
+    <h1>بيانات العمليات على أرصدة المنصات خلال يوم <br> {{ $date }}</h1>
+
+    <input dir="rtl" type="text" id="myInput" onkeyup="myFunction()" placeholder="ابحث عن منصة..">
+    <table  id="dataTable" dir="rtl">
         <thead>
         <tr>
             <th>الرقم</th>
-            <th>رصيد جوال</th>
-            <th>رصيد أوريدوا</th>
-            <th>رصيد جوال باي</th>
-            <th>رصيد الكهرباء</th>
-            <th>رصيد فواتير أوريدوا</th>
-            <th>رصيد بنك فلسطين</th>
-            <th>رصيد بنك القدس</th>
-            <th>اخر تحديث</th>
+            <th>نوع العملية</th>
+            <th>اسم المنصة</th>
+            <th>المبلغ</th>
+            <th>الملاحظات</th>
+            <th>وقت التسجيل</th>
+            <th>اخر تحديث </th>
+            <th>تم التحديث بواسطة: </th>
         </tr>
         </thead>
         <tbody>
-        @foreach($balancsales as $balancsale)
+        @foreach($balancesales as $balancesale)
             <tr>
 
-                <th scope="row">{{$balancsale -> id}}</th>
-                <td>{{$balancsale-> jawwal}}</td>
-                <td>{{$balancsale-> ooredoo}}</td>
-                <td>{{$balancsale -> jawwalpay}}</td>
-                <td>{{$balancsale -> electricity}}</td>
-                <td>{{$balancsale -> ooredoobills}}</td>
-                <td>{{$balancsale -> bop}}</td>
-                <td>{{$balancsale -> bankquds}}</td>
-                <td>{{$balancsale -> updated_at}}</td>
+                <th scope="row">{{$balancesale -> id}}</th>
+                <td>{{$balancesale-> record_type}}</td>
+                <td>{{$balancesale-> platform_name}}</td>
+                <td>{{$balancesale -> amount}}</td>
+                <td>{{$balancesale -> notes}}</td>
+                <td>{{$balancesale -> created_at}}</td>
+                @if(!$balancesale -> updated_at)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$balancesale -> updated_at}} </td>
+                @endif
+                @if(!$balancesale -> updated_By)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$balancesale -> updated_By}} </td>
+                @endif
 
 
             </tr>
@@ -87,55 +94,34 @@
 
         </tbody>
     </table>
-    <div dir="rtl" class="form-group">
-        <label class="text-bg-info" for="FormControlTextarea1">ملاحظات الارصدة المباعة:</label>
-        <textarea readonly class="form-control" id="FormControlTextarea1" cols="90" rows="5">{{$balancsale -> notes}}</textarea>
-    </div>
+    <h4 class="text-bg-info fw-bold title" id ="nodata"style="display: none"> لا بيانات بهذا الاسم</h4>
 
-    <h1>بيانات  الارصدة المدخل خلال يوم {{ $date }}</h1>
-    <table dir="rtl">
-        <thead>
-        <tr>
-            <th>الرقم</th>
-            <th>رصيد جوال الداخل</th>
-            <th>رصيد أوريدوا الداخل</th>
-            <th> رصيد جوال باي الداخل</th>
-            <th>رصيد الكهرباءالداخل </th>
-            <th>رصيد فواتير أوريدوا الداخل</th>
-            <th>رصيد بنك فلسطين الداخل</th>
-            <th>رصيد بنك القدس الداخل</th>
-            <th>إجمالي الدفعات الأولى</th>
-            <th>اخر تحديث</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach($balancsales as $balancsale)
-            <tr>
+    <script>
+        function myFunction() {
+            // Declare variables
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("myInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("dataTable");
+            tr = table.getElementsByTagName("tr");
 
-                <th scope="row">{{$balancsale -> id}}</th>
-                <td>{{$balancsale-> jawwalin}}</td>
-                <td>{{$balancsale-> ooredooin}}</td>
-                <td>{{$balancsale -> jawwalpayin}}</td>
-                <td>{{$balancsale -> electricityin}}</td>
-                <td>{{$balancsale -> ooredoobillsin}}</td>
-                <td>{{$balancsale -> bopin}}</td>
-                <td>{{$balancsale -> bankqudsin}}</td>
-                <td>{{$balancsale -> firstpay}}</td>
-                <td>{{$balancsale -> updated_at}}</td>
-
-
-            </tr>
-        @endforeach
-
-        </tbody>
-    </table>
-    <div dir="rtl" class="form-group">
-        <label class="text-bg-info" for="FormControlTextarea1">ملاحظات الارصدة الداخلة:</label>
-        <textarea readonly class="form-control" id="FormControlTextarea1" cols="90" rows="5">{{$balancsale -> innotes}}</textarea>
-    </div>
+            // Loop through all table rows, and hide those who don't match the search query
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[1];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
 </div>
 
 </body>
-</html>
+
 
 @endsection

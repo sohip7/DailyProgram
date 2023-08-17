@@ -16,6 +16,11 @@
             {{ Session::get('success') }}
         </div>
     @endif
+        @if(Session::has('Error'))
+            <div class="alert alert-danger" role="alert">
+                {{ Session::get('Error') }}
+            </div>
+        @endif
 
     <!-- رابط مكتبة jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -55,9 +60,10 @@
 
         });
     </script>
+        <input dir="rtl" type="text" id="myInput" onkeyup="myFunction()" placeholder="ابحث عن نوع العملية..">
 
     <h1>سجل الديون ليوم {{$date}} </h1>
-    <table dir="rtl">
+    <table id="dataTable" dir="rtl">
         <thead>
         <tr>
             <th>الرقم</th>
@@ -70,7 +76,9 @@
             <th>الملاحظات</th>
             <th>اسم الدائن</th>
             <th>وقت التسجيل</th>
-            <th>بواسطة المستخدم</th>
+            <th>سُجلت بواسطة المستخدم</th>
+            <th>وقت التحديث</th>
+            <th>عُدلت بواسطة المستخدم</th>
             <th>الاجراءات</th>
 
         </tr>
@@ -91,11 +99,24 @@
                 <td>{{$Loan -> debtorName}}</td>
                 <td>{{$Loan -> created_at}}</td>
                 <td>{{$Loan -> UserName}}</td>
-
-                <td style="display: flex " >
-                    <a  href="{{route('Loans.edit',$Loan->id)}}" class="btn btn-success">تعديل الصف</a>
-                    <a onclick="confirmDelete('{{route('Loans.Delete',$Loan->id)}}')" class="btn btn-danger"> حذف الصف</a>
-                </td>
+                @if(!$Loan -> updated_at)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td>{{$Loan -> updated_at}}</td>
+                @endif
+            @if(!$Loan -> updated_By)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$Loan -> updated_By}} </td>
+                @endif
+                @if($Loan -> RecordType == 'OoredooSim')
+                    <td class="text-secondary fw-bold">ممنوع الحذف او التعديل من هنا</td>
+                @else
+                    <td style="display: flex " >
+                        <a  href="{{route('Loans.edit',$Loan->id)}}" class="btn btn-success">تعديل الصف</a>
+                        <a onclick="confirmDelete('{{route('Loans.Delete',$Loan->id)}}')" class="btn btn-danger"> حذف الصف</a>
+                    </td>
+                        @endif
 
             </tr>
         @endforeach
@@ -111,12 +132,38 @@
 
         </tbody>
     </table>
-    <div class="text-box">
+
+        <div class="text-box">
         <p> : إجمالي ديون اليوم  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
         <a href="{{ route('LendForm') }}" class="btn btn-primary">إضافة جديد</a>
 
     </div>
 </div>
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue, nodata;
+        input = document.getElementById("myInput");
+        nodata = document.getElementById("nodata");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("dataTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+
+                }
+            }
+        }
+    }
+</script>
 </body>
 </html>
 

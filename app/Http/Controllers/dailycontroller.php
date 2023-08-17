@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\balance_inout;
 use App\Models\balance_sale;
 use App\Models\CustomerPay;
 use App\Models\dailydata;
@@ -40,14 +41,14 @@ class DailyController extends Controller
     public function balance_sales_show()
     {
        $date=today()->format('Y-m-d');
-       $balancsales=balance_sale::whereDate('created_at',$date)->get();
+       $balancesales=balance_inout::whereDate('created_at',$date)->get();
         return view('Show\balanceSalesShow',get_defined_vars());
     }
 
     public function balanceSalesShowWithDate(Request $request)
     {
        $date=$request->date;
-       $balancsales=balance_sale::whereDate('created_at',$date)->get();
+       $balancesales=balance_inout::whereDate('created_at',$date)->get();
         return view('Show\balanceSalesShow',get_defined_vars());
     }
     public function DailyNotesWithDate(Request $request)
@@ -57,169 +58,332 @@ class DailyController extends Controller
         return view('DailyNotesShow',get_defined_vars());
     }
 
+    public function PayMerchantShow()
+    {
+
+        $date=today()->format('Y-m-d');
+        $MerchPaysOuts=Outs::where('service_number','1')->whereDate('created_at',$date)->get();
+        $balanceOuts=balance_inout::where('service_number','1')->whereDate('created_at',$date)->get();
+        $todayTotal=balance_inout::where('service_number','1')->whereDate('created_at',$date)->sum('amount');
+        return view('Show/merchantPaysShow',get_defined_vars());
+    }
+    public function MerchantPaysWithDate(Request $request){
+
+        $date = $request->input('date');
+
+        $MerchPaysOuts=Outs::where('service_number','1')->whereDate('created_at',$date)->get();
+        $balanceOuts=balance_inout::where('service_number','1')->whereDate('created_at',$date)->get();
+        $todayTotal=balance_inout::where('service_number','1')->whereDate('created_at',$date)->sum('amount');
+        return view('Show/merchantPaysShow',get_defined_vars());
+    }
+
+
     /************************************ Sales *****************************/
     public function StoreSales(Request $request){
         $user_data = Auth::user();
-
-        $sales = dailydata::create([
+        $insertedID = dailydata::insertGetId([
             'item'=> $request->item_name,
             'RecordType'=> $request->RecordType,
             'amount'=> $request->amount,
             'quantity'=> $request->quantity,
-            'FirstPay'=> $request->FirstPay,
+            'osap'=> $request->ActivePrice,
             'notes'=> $request->notes,
             'total'=> $request->amount * $request->quantity ,
             'user_name'=> $user_data->name
         ]);
+        if (!$insertedID){
+            return redirect()->back()->with(['Error'=> 'لم تنجح الاضافة']);
+
+        }
         if ($request->has('RecordType')) {
             $selectedValue = $request->input('RecordType');
 
-            // تنفيذ العمليات المطلوبة بناءً على القيمة المختارة
             if($selectedValue === 'Ooredoo') {
-               $ooredooSale=balance_sale::select('ooredoo')->whereDate('created_at', today())->first();
-               $x=$ooredooSale->ooredoo;
-                $x+=$request->amount;
-                $ooredooSale=balance_sale::whereDate('created_at', today())->update([
-                    'ooredoo'=>$x
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مخرج',
+                    'platform_name'=>$selectedValue, //Ooredoo
+                    'sales_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount * $request->quantity,
+                    'notes'=>"نقداُ",
                     ]);
 
             } elseif ($selectedValue === 'Jawwal') {
-                $jawwalSale=balance_sale::select('jawwal')->whereDate('created_at', today())->first();
-                $x=$jawwalSale->jawwal;
-                $x+=$request->amount;
-                $jawwalSale=balance_sale::whereDate('created_at', today())->update([
-                    'jawwal'=>$x
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مخرج',
+                    'platform_name'=>$selectedValue, //Jawwal
+                    'sales_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount * $request->quantity,
+                    'notes'=>"نقداُ",
                 ]);
             }
 
             elseif ($selectedValue === 'JawwalPay') {
-                $jawwalpaySale=balance_sale::select('jawwalpay')->whereDate('created_at', today())->first();
-                $x=$jawwalpaySale->jawwalpay;
-                $x+=$request->amount;
-                $jawwalpaySale=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalpay'=>$x
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مخرج',
+                    'platform_name'=>$selectedValue, //JawwalPay
+                    'sales_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount * $request->quantity,
+                    'notes'=>"نقداُ",
                 ]);
             }
 
             elseif ($selectedValue === 'OoredooBills') {
-                $ooredoobillsSale=balance_sale::select('ooredoobills')->whereDate('created_at', today())->first();
-                $x=$ooredoobillsSale->ooredoobills;
-                $x+=$request->amount;
-                $ooredoobillsSale=balance_sale::whereDate('created_at', today())->update([
-                    'ooredoobills'=>$x
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مخرج',
+                    'platform_name'=>$selectedValue, //OoredooBills
+                    'sales_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount * $request->quantity,
+                    'notes'=>"نقداُ",
                 ]);
             }
 
             elseif ($selectedValue === 'Electricity') {
-                $electricitySale=balance_sale::select('electricity')->whereDate('created_at', today())->first();
-                $x=$electricitySale->electricity;
-                $x+=$request->amount;
-                $electricitySale=balance_sale::whereDate('created_at', today())->update([
-                    'electricity'=>$x
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مخرج',
+                    'platform_name'=>$selectedValue, //Electricity
+                    'sales_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount * $request->quantity,
+                    'notes'=>"نقداُ",
                 ]);
             }
-        } else {
+            elseif ($selectedValue === 'OoredooSim') {
+                $store_lend_ooredooSim=lenddata::create([
+                    'item'=> "تفعيل شريحة أوريدوا",
+                    'sales_foreign_id'=> $insertedID,
+                    'RecordType'=> $selectedValue,
+                    'amount'=> $request->ActivePrice,
+                    'quantity'=> $request->quantity,
+                    'total'=> $request->ActivePrice * $request->quantity,
+                    'debtorName'=> "تفعيل شريحة Ooredoo",
+                    'UserName'=> $user_data->name,
+                    ]);
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مخرج',
+                    'platform_name'=>"Ooredoo",
+                    'loans_foreign_id'=>$insertedID,
+                    'amount'=> $request->ActivePrice,
+                    'notes'=>"مديونية تفعيل شريحة",
+                ]);
 
+                return redirect()->back()->with(['success'=> "تم حفظ بيع الشريحة بنجاح وتسجيل مديونية التفعيل وهي $request->ActivePrice"]) ;
+            }
+        } else {
         }
         return redirect()->back()->with(['success'=> 'تم الحفظ بنجاح']);
     }
 
-    public function SalesShowDelete(Request $request){
-
-        $Sales2 = dailydata::find($request -> id);   // $Sales::where('id','') -> first();
-
+    public function SalesDelete(Request $request){
+        $user_data = Auth::user();
+        $Sales2 = dailydata::find($request -> id);
+        $loans_ooredooSim=lenddata::where('sales_foreign_id',$request -> id)->first();
+        $balance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();
         if (!$Sales2){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
-        }else {
-
+        }elseif($loans_ooredooSim) {
+            $loans_ooredooSim->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $Sales2->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $loans_ooredooSim->delete();
             $Sales2->delete();
-
-            return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+            $balance_inout->delete();
+            return redirect()->back()->with(['success' => 'تم حذف تسجيل الشريحة بنجاح ']);
+        }else{
+            $Sales2->update([
+                'deleted_by' => $user_data->name
+            ]);
+        $Sales2->delete();
         }
+        return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+
     }
+
 
 
 
     public function SalesEdit(Request  $request)
     {
         $user_data = Auth::user();
-        $Sales = dailydata::find($request -> id);  // search in given table id only
+        $Sales = dailydata::find($request -> id);
+        $loans_ooredooSim=lenddata::where('sales_foreign_id',$request -> id)->first();
         if (!$Sales)
-            return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
-
-        $Sales = dailydata::select('id','RecordType','item', 'amount', 'quantity', 'notes')->find($request -> id);
-
-        return view('Edit_Forms.SalesEdit', compact('Sales','user_data'));
+            return redirect()->back()->with(['Error' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
+        return view('Edit_Forms.SalesEdit', get_defined_vars());
 
     }
 
     public  function SalesUpdate(Request $request){
         $user_data = Auth::user();
         $sales = dailydata::find($request -> id);
+        $loans_ooredooSim=lenddata::where('sales_foreign_id',$request -> id);
+        $balance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();
         if (!$sales)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
+        if($request->RecordType=='OoredooSim' and !$balance_inout)
+            return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:1']);
+
 
         //update data
-        $sales->update([
-            'item'=> $request->item_name,
-            'RecordType'=> $request->RecordType,
-            'amount'=> $request->amount,
-            'quantity'=> $request->quantity,
-            'FirstPay'=> $request->FirstPay,
-            'notes'=> $request->notes,
-            'total'=> $request->amount * $request->quantity ,
-            'user_name'=> $user_data->name
-        ]);
+
+        if($request->RecordType!='General' and $request->RecordType!='OoredooSim') {
+
+            if (!$balance_inout)
+                return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:2']);
+            $balance_inout->update([
+                'amount' => $request->amount,
+                'platform_name' => $request->RecordType,
+                'updated_By' => $user_data->name
+            ]);
+        }
+        if($request->RecordType=='General' and $balance_inout ){
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+            if($loans_ooredooSim){
+                $loans_ooredooSim->update([
+                    'deleted_by' => $user_data->name
+                ]);
+                $loans_ooredooSim->delete();
+            }
+        }
+        elseif ($request->RecordType=='OoredooSim'){
+            if (!$balance_inout or !$loans_ooredooSim)
+                return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:3']);
+            $loans_ooredooSim->update([
+                'amount'=> $request->ActivePrice,
+                'quantity'=> $request->quantity,
+                'total'=> $request->ActivePrice * $request->quantity,
+                'updated_By'=> $user_data->name,
+            ]);
+            $balance_inout->update([
+                'amount'=> $request->ActivePrice,
+                'updated_By'=> $user_data->name,
+            ]);
+        }
+            $sales->update([
+                'item'=> $request->item_name,
+                'RecordType'=> $request->RecordType,
+                'amount'=> $request->amount,
+                'quantity'=> $request->quantity,
+                'osap'=> $request->ActivePrice,
+                'notes'=> $request->notes,
+                'total'=> $request->amount * $request->quantity ,
+                'user_name'=> $user_data->name,
+                'updated_By'=> $user_data->name
+            ]);
+
+
+
+
+
 
         return redirect()->route('sales.show')->with(['success' => 'تم التحديث بنجاح']);
 
     }
 /************************************ CustomerPayment *****************************/
     public function CustomerPaymentDelete(Request $request){
-
+        $user_data = Auth::user();
         $CusPay = CustomerPay::find($request -> id);
-
+        $out = Outs::where('cuspay_foreign_id',$request->id);
+        $balance_inout=balance_inout::where('cuspay_foreign_id',$request->id);
         if (!$CusPay){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
-        }else {
-
+        }elseif($balance_inout) {
+            $CusPay->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $out->update([
+                'deleted_by' => $user_data->name
+            ]);
             $CusPay->delete();
+            $balance_inout->delete();
+            $out->delete();
 
-            return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+        }else {
+            $CusPay->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $CusPay->delete();
         }
-    }
+
+
+        return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+        }
+
 
 
 
     public function CustomerPaymentEdit(Request  $request)
     {
         $user_data = Auth::user();
-        $CusPay = CustomerPay::find($request -> id);  // search in given table id only
+        $CusPay = CustomerPay::find($request -> id);
         if (!$CusPay)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
-        $CusPay = CustomerPay::select('id', 'CustomerName','PayMethod', 'amount', 'notes')->find($request -> id);
-
-        return view('Edit_Forms.CustomerPaymentEdit', compact('CusPay','user_data'));
+        return view('Edit_Forms.CustomerPaymentEdit', get_defined_vars());
 
     }
 
     public  function CustomerPaymentUpdate(Request $request){
         $user_data = Auth::user();
         $CusPay= CustomerPay::find($request -> id);
+        $Outs=Outs::where('cuspay_foreign_id',$request -> id)->first();
+        $balance_inout=balance_inout::where('cuspay_foreign_id',$request -> id)->first();
         if (!$CusPay)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
-
         //update data
+
+        if($request->PayMethod!='Cash'){
+            //update data
+            if(!$Outs)
+                return redirect()->route('CustomerPay.show')->with(['Error' => 'عملية تعديل غير مسموح بها، قم بحذف السجل ومعاودة إضافة سجل جديد بالبيانات الصحيحة']);
+
+                $Outs->update([
+                    'item'=> "إخراج إلى رصيد $request->PayMethod ",
+                    'amount'=> $request->amount,
+                    'RecordType'=> $request->PayMethod,
+                    'notes'=> $request->notes,
+                    'updated_By'=> $user_data->name
+                ]);
+            $balance_inout->update([
+                'amount'=> $request->amount,
+                'platform_name'=> $request->PayMethod,
+                'updated_By'=> $user_data->name
+            ]);
+        }
+
         $CusPay->update([
             'CustomerName'=> $request->CustomerName,
             'amount'=> $request->amount,
             'PayMethod'=> $request->PayMethod,
             'notes'=> $request->notes,
-            'user_name'=> $user_data->name
+            'user_name'=> $user_data->name,
+            'updated_By'=> $user_data->name
         ]);
+
+        if($request->PayMethod=='Cash' and $balance_inout){
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $Outs->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+            $Outs->delete();
+        }
+
+
 
         return redirect()->route('CustomerPay.show')->with(['success' => 'تم التحديث بنجاح']);
 
@@ -228,66 +392,163 @@ class DailyController extends Controller
 
     /************************************ Loans *****************************/
     public function LoansDelete(Request $request){
-
-        $loans = lenddata::find($request -> id);   // $Sales::where('id','') -> first();
+        $user_data = Auth::user();
+        $loans = lenddata::find($request -> id);
+        $firstpay_rec = dailydata::where('lend_foreign_id', $request->id)->first();
+        $balance_inout = balance_inout::where('loans_foreign_id', $request->id)->first();
 
         if (!$loans){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
-        }else {
-
+        }elseif($firstpay_rec and $balance_inout ) {
+            $loans->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $firstpay_rec->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
             $loans->delete();
+            $firstpay_rec->delete();
+            $balance_inout->delete();
 
-            return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+        }elseif ($firstpay_rec){
+            $firstpay_rec->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $loans->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $loans->delete();
+            $firstpay_rec->delete();
+
+        }elseif($balance_inout){
+            $loans->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+            $loans->delete();
+        }else {
+            $loans->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $loans->delete();
         }
+        return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+
     }
+
+
+
+
 
 
 
     public function LoansEdit(Request  $request)
     {
+
         $user_data = Auth::user();
-        $loans = lenddata::find($request -> id);  // search in given table id only
+        $loans = lenddata::find($request -> id);
+        $balance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();
         if (!$loans)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
-        $loans = lenddata::select('id', 'RecordType','item', 'amount','quantity','FirstPay', 'notes','debtorName')->find($request -> id);
 
-        return view('Edit_Forms.LendEdit', compact('loans','user_data'));
+        return view('Edit_Forms.LendEdit', get_defined_vars());
 
     }
 
-    public  function LoansUpdate(Request $request){
+
+
+    public  function LoansUpdate(Request $request)
+    {
         $user_data = Auth::user();
-        $loans= lenddata::find($request -> id);
+        $loans = lenddata::find($request->id);
+        $balance_inout = balance_inout::where('loans_foreign_id', $request->id)->first();
+        $firstpay_rec = dailydata::where('lend_foreign_id', $request->id)->first();
+
         if (!$loans)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
-
+        /* if(!$balance_inout)
+             return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مقبول، قم بحذف السجل المراد تعديله وإضافته مجدداً بالشكل الصحيح']);
+ */
         //update data
+
+        if($request->RecordType == 'installment_transaction' and $firstpay_rec ){
+            $firstpay_rec->update([
+                'item' => "دفعة أولى من معاملة تقسيط $request->debtor_name",
+                'RecordType' => "دفعة أولى",
+                'amount' => $request->FirstPay,
+                'total' => $request->FirstPay,
+                'updated_By' => $user_data->name,
+                'notes' => "نوع الجهاز : $request->item_name
+                مبلغ الدَين الاجمالي : $request->amount",
+            ]);
+        }
+        if($request->RecordType == 'General' and !$firstpay_rec){
+            return redirect()->route('Loans.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم إتاحته قريبا، يرجى إبلاغ المطور']);
+
+        }
+        if($request->RecordType != 'General' and $request->RecordType != 'installment_transaction' and !$balance_inout){
+            return redirect()->route('Loans.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم إتاحته قريبا، يرجى إبلاغ المطور']);
+
+        }
+        if ($request->RecordType != 'General' and $request->RecordType != 'installment_transaction') {
+            $balance_inout->update([
+                'platform_name' => $request->RecordType,
+                'amount' => $request->amount,
+                'notes' => "دَين على $request->debtor_name",
+                'updated_By' => $user_data->name
+            ]);
+        }
+        if ($request->RecordType == 'General' or $request->RecordType == 'installment_transaction' ){
+            if($balance_inout){
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+            }
+        }
+        if($firstpay_rec!=null ){
+            if($request->RecordType=='General' or $request->RecordType=='Ooredoo' or $request->RecordType=='Jawwal' or $request->RecordType=='OoredooBills' or $request->RecordType=='JawwalPay' or $request->RecordType=='Electricity') {
+                $firstpay_rec->update([
+                    'deleted_by' => $user_data->name
+                ]);
+                $firstpay_rec->delete();
+            }
+         }
         $loans->update([
-            'item_name'=> $request->item_name,
-            'RecordType'=> $request->RecordType,
-            'amount'=> $request->amount,
-            'quantity'=> $request->quantity,
-            'total'=> $request->amount*$request->quantity,
-            'debtor_name'=> $request->debtor_name,
-            'notes'=> $request->notes,
-            'user_name'=> $user_data->name
+            'item_name' => $request->item_name,
+            'RecordType' => $request->RecordType,
+            'amount' => $request->amount,
+            'quantity' => $request->quantity,
+            'FirstPay' => $request->FirstPay,
+            'total' => $request->amount * $request->quantity,
+            'debtorName' => $request->debtor_name,
+            'notes' => $request->notes,
+            'updated_By' => $user_data->name
         ]);
 
-        return redirect()->route('Loans.show')->with(['success' => 'تم التحديث بنجاح']);
 
+        return redirect()->route('Loans.show')->with(['success' => 'تم التحديث بنجاح']);
     }
 
     /************************************ Outs *****************************/
     public function OutsDelete(Request $request){
-
+        $user_data = Auth::user();
         $Outs = Outs::find($request -> id);   // $Sales::where('id','') -> first();
 
         if (!$Outs){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
         }else {
-
+            $Outs->update([
+                'deleted_by' => $user_data->name
+            ]);
             $Outs->delete();
 
             return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
@@ -299,11 +560,11 @@ class DailyController extends Controller
     public function OutsEdit(Request  $request)
     {
         $user_data = Auth::user();
-        $Outs = Outs::find($request -> id);  // search in given table id only
+        $Outs = Outs::find($request -> id);
         if (!$Outs)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
-        $Outs = Outs::select('id','RecordType','beneficiary', 'item', 'amount', 'notes')->find($request -> id);
+        $Outs = Outs::find($request -> id);
 
         return view('Edit_Forms.OutEdit', get_defined_vars());
 
@@ -312,6 +573,7 @@ class DailyController extends Controller
     public  function OutsUpdate(Request $request){
         $user_data = Auth::user();
         $Outs= Outs::find($request -> id);
+        $balance_inout=balance_inout::where('outs_foreign_id',$request -> id)->first();
         if (!$Outs)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
@@ -323,7 +585,22 @@ class DailyController extends Controller
             'RecordType'=> $request->RecordType,
             'beneficiary'=> $request->beneficiary,
             'notes'=> $request->notes,
+            'updated_By'=> $user_data->name
         ]);
+        if($request->RecordType!='Cash'  and $balance_inout){
+
+            $balance_inout->update([
+            'amount'=> $request->amount,
+            'platform_name'=> $request->RecordType,
+            'updated_By'=> $user_data->name
+        ]);
+        }elseif($request->RecordType=='Cash' and $balance_inout){
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+        }
+
 
         return redirect()->route('Outs.show')->with(['success' => 'تم التحديث بنجاح']);
 
@@ -333,81 +610,30 @@ class DailyController extends Controller
 
 /************************************ Purchases *****************************/
     public function PurchasesDelete(Request $request){
-
-        $Purchases = DealersBuy::find($request -> id);   // $Sales::where('id','') -> first();
+        $user_data = Auth::user();
+        $Purchases = DealersBuy::find($request -> id);
+        $balance_inout = balance_inout::where('purchases_foreign_id', $request->id)->first();
 
         if (!$Purchases){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
-        }else {
-            $selectedValue = $Purchases->RecordType;
-
-            if($selectedValue === 'Ooredoo') {
-                $ooredooBaseBalance=balance_sale::select('ooredooin','innotes')->whereDate('created_at', today())->first();
-                $x=$ooredooBaseBalance->ooredooin;
-                $x-=$Purchases->amount;
-                $n=$ooredooBaseBalance->innotes;
-                $ooredooSale=balance_sale::whereDate('created_at', today())->update([
-                    'ooredooin'=>$x,
-                    'innotes'=>$n. "\n تم حذف قيمة $Purchases->amount   شيكل رصيد أوريدوا  "
-
-                ]);
-
-            } elseif ($selectedValue === 'Jawwal') {
-                $jawwalBaseBalance=balance_sale::select('jawwalin','innotes')->whereDate('created_at', today())->first();
-                $x=$jawwalBaseBalance->jawwalin;
-                $x-=$Purchases->amount;
-                $n=$jawwalBaseBalance->innotes;
-                $jawwalSale=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalin'=>$x,
-                    'innotes'=>$n. "\n تم حذف $Purchases->amount   شيكل رصيد جوال  "
-
-                ]);
-            }
-
-            elseif ($selectedValue === 'JawwalPay') {
-                $JawwalPayinBalance=balance_sale::select('jawwalpayin','innotes')->whereDate('created_at', today())->first();
-                $x=$JawwalPayinBalance->jawwalpayin;
-                $x-=$Purchases->amount;
-                $n=$JawwalPayinBalance->innotes;
-                $jawwalpayin=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalpayin'=>$x,
-                    'innotes'=>$n. "\n تم حذف  $Purchases->amount   شيكل رصيد جوال باي  "
-
-                ]);
-            }
-
-            elseif ($selectedValue === 'OoredooBills') {
-                $ooredoobillsinBalance=balance_sale::select('ooredoobillsin','innotes')->whereDate('created_at', today())->first();
-                $x=$ooredoobillsinBalance->ooredoobillsin	;
-                $x-=$Purchases->amount;
-                $n=$ooredoobillsinBalance->innotes;
-                $ooredoobillsin=balance_sale::whereDate('created_at', today())->update([
-                    'ooredoobillsin'=>$x,
-                    'innotes'=>$n. "\n تم حذف  $Purchases->amount   شيكل رصيد فواتير اوريدوا  "
-
-                ]);
-            }
-
-            elseif ($selectedValue === 'Electricity') {
-                $ElectricityBaseBalance=balance_sale::select('electricityin','innotes')->whereDate('created_at', today())->first();
-                $x=$ElectricityBaseBalance->electricityin;
-                $x-=$Purchases->amount;
-                $n=$ElectricityBaseBalance->innotes;
-                $ElectricitySale=balance_sale::whereDate('created_at', today())->update([
-                    'electricityin'=>$x,
-                    'innotes'=>$n. "\n تم حذف  $Purchases->amount   شيكل رصيد كهرباء  "
-
-                ]);
-            }
-
-            else {
-
-            }
-
+        }elseif($balance_inout ){
+            $Purchases->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
             $Purchases->delete();
-
-            return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+            $balance_inout->delete();
         }
+        elseif($Purchases ){
+            $Purchases->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $Purchases->delete();
+        }
+        return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+
     }
 
 
@@ -415,20 +641,21 @@ class DailyController extends Controller
     public function PurchasesEdit(Request  $request)
     {
         $user_data = Auth::user();
-        $Purchases = DealersBuy::find($request -> id);  // search in given table id only
+        $Purchases = DealersBuy::find($request -> id);
         if (!$Purchases)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
-        $Purchases = DealersBuy::select('id', 'item','RecordType', 'amount', 'notes', 'SellerName')->find($request -> id);
+        $Purchases = DealersBuy::find($request -> id);
 
 
-        return view('Edit_Forms.DealersBuyEdit', compact('Purchases','user_data'));
+        return view('Edit_Forms.DealersBuyEdit', get_defined_vars());
 
     }
 
     public  function PurchasesUpdate(Request $request){
         $user_data = Auth::user();
         $Purchases= DealersBuy::find($request -> id);
+        $balance_inout=balance_inout::where('purchases_foreign_id',$request -> id)->first();
         if (!$Purchases)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
@@ -440,8 +667,21 @@ class DailyController extends Controller
             'SellerName'=> $request->DealerName,
             'RecordType'=> $request->RecordType,
             'notes'=> $request->notes,
-            'user_name'=> $user_data->name
+            'user_name'=> $user_data->name,
+            'updated_By'=> $user_data->name
         ]);
+        if($request->RecordType!='General'){
+        $balance_inout->update([
+            'amount'=> $request->amount,
+            'platform_name'=> $request->RecordType,
+            'updated_By'=> $user_data->name
+        ]);
+        }elseif ($request->RecordType=='General' and $balance_inout) {
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+        }
 
 
 
@@ -453,13 +693,12 @@ class DailyController extends Controller
 
     /************************************ PlatformBalance *****************************/
     public function PlatformBalanceDelete(Request $request){
-
+        $user_data = Auth::user();
         $PlatformBalances = PlatformBalance::find($request -> id);   // $Sales::where('id','') -> first();
 
         if (!$PlatformBalances){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
         }else {
-
             $PlatformBalances->delete();
 
             return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
@@ -499,19 +738,108 @@ class DailyController extends Controller
             'BankAlQudsBalance'=> $request->BankAlQudsBalance,
             'notes'=> $request->notes,
             'BalanceType'=> $request->BalanceType,
+            'updated_By'=> $user_data->name
         ]);
 
         return redirect()->route('PlatformBalance.show')->with(['success' => 'تم التحديث بنجاح']);
 
     }
+ /************************************ PayMerchant *****************************/
+    public function PayMerchantDelete(Request $request){
+        $user_data = Auth::user();
+        $outs = Outs::find($request -> id);
+        $balance_inout = balance_inout::where('merchantpay_foreign_id',$request -> id);
+
+        if (!$balance_inout or !$outs){
+            return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
+        }else {
+            $outs->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+            $outs->delete();
+
+            return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
+        }
+
+    }
 
 
 
+    public function PayMerchantEdit(Request  $request)
+    {
+        $user_data = Auth::user();
+
+        $outs = Outs::find($request -> id);
+        $balance_inout = balance_inout::where('merchantpay_foreign_id',$request -> id)->first();
+        if (!$balance_inout or !$outs)
+            return redirect()->back()->with(['Error' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
+
+
+        return view('Edit_Forms.payToMerchantEdit', get_defined_vars());
+
+    }
+
+    public  function PayMerchantUpdate(Request $request){
+        $user_data = Auth::user();
+        $outs = Outs::find($request -> id);
+        $balance_inout = balance_inout::where('merchantpay_foreign_id',$request -> id)->first();
+        if (!$balance_inout )
+            return redirect()->back()->with(['Error' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
+
+        if($request->PayMethod=='Cash' or $request->PayMethod=='under'or $request->PayMethod=='check'  and $balance_inout ) {
+
+            $outs->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+            $outs->delete();
+            return redirect()->route('PayMerchant.show')->with([
+                'success' => 'تم التعديل بنجاح، مع حذف السجل من هنا كون العملية أصبحت كاش وليست إلكترونية',
+                'info' => 'للإطلاع على السجل بعد التعديل اذهب لصفحة المخرجات ،حيث أن العملية اصبحت في سجل المخرجات كدفعة للتجار'
+            ]);
+
+        }
+        if($request->PayMethod=='under' or $request->PayMethod=='check'){
+           return "under";
+        }
+        //update data
+        if($request->PayMethod!='Cash'or $request->PayMethod!='under' or $request->PayMethod!='check')
+        $outs->update([
+            'amount'=> $request->amount,
+            'item'=> "دفعة إلى تاجر عن طريق $request->PayMethod",
+            'RecordType'=> $request->PayMethod,
+            'beneficiary'=> $request->merchant_name,
+            'notes'=> $request->notes,
+            'updated_By'=> $user_data->name
+        ]);
+        if($request->PayMethod!='Cash') {
+            $balance_inout->update([
+                'amount' => $request->amount,
+                'platform_name' => $request->PayMethod,
+                'updated_By' => $user_data->name,
+                'notes' => "دفعة إلى  :$request->merchant_name ",
+            ]);
+        }
+
+
+        return redirect()->route('PayMerchant.show')->with(['success' => 'تم التحديث بنجاح']);
+
+    }
+
+
+##########################################################################
 
     public function StoreDealersBuy(Request $request){
         $user_data = Auth::user();
 
-        $sales = DealersBuy::create([
+        $insertedId = DealersBuy::insertGetId([
             'item'=> $request->item_name,
             'amount'=> $request->amount,
             'SellerName'=> $request->DealerName,
@@ -523,61 +851,51 @@ class DailyController extends Controller
             $selectedValue = $request->input('RecordType');
 
             if($selectedValue === 'Ooredoo') {
-                $ooredooBaseBalance=balance_sale::select('ooredooin','innotes')->whereDate('created_at', today())->first();
-                $x=$ooredooBaseBalance->ooredooin;
-                $x+=$request->amount;
-                $n=$ooredooBaseBalance->innotes;
-                $ooredooSale=balance_sale::whereDate('created_at', today())->update([
-                    'ooredooin'=>$x,
-                     'innotes'=>$n. "\n تم إضافة $request->amount   شيكل رصيد أوريدوا التي تم شرائه اليوم "
-
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //Ooredoo
+                    'purchases_foreign_id'=>$insertedId,
+                    'amount'=> $request->amount,
+                    'notes'=>"شحن المنصة من تاجر",
                 ]);
 
             } elseif ($selectedValue === 'Jawwal') {
-                $jawwalBaseBalance=balance_sale::select('jawwalin','innotes')->whereDate('created_at', today())->first();
-                $x=$jawwalBaseBalance->jawwalin;
-                $x+=$request->amount;
-                $n=$jawwalBaseBalance->innotes;
-                $jawwalSale=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalin'=>$x,
-                    'innotes'=>$n. "\n تم إضافة $request->amount   شيكل رصيد جوال التي تم شرائه اليوم "
-
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue,//Jawwal
+                    'purchases_foreign_id'=>$insertedId,
+                    'amount'=> $request->amount,
+                    'notes'=>"شحن المنصة من تاجر",
                 ]);
             }
 
             elseif ($selectedValue === 'JawwalPay') {
-                $JawwalPayinBalance=balance_sale::select('jawwalpayin','innotes')->whereDate('created_at', today())->first();
-                $x=$JawwalPayinBalance->jawwalpayin;
-                $x+=$request->amount;
-                $n=$JawwalPayinBalance->innotes;
-                $jawwalpayin=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalpayin'=>$x,
-                    'innotes'=>$n. "\n تم إضافة  $request->amount   شيكل رصيد جوال باي التي تم شرائه اليوم "
-
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //JawwalPay
+                    'purchases_foreign_id'=>$insertedId,
+                    'amount'=> $request->amount,
+                    'notes'=>"شحن المنصة من تاجر",
                 ]);
             }
 
             elseif ($selectedValue === 'OoredooBills') {
-                $ooredoobillsinBalance=balance_sale::select('ooredoobillsin','innotes')->whereDate('created_at', today())->first();
-                $x=$ooredoobillsinBalance->ooredoobillsin	;
-                $x+=$request->amount;
-                $n=$ooredoobillsinBalance->innotes;
-                $ooredoobillsin=balance_sale::whereDate('created_at', today())->update([
-                    'ooredoobillsin'=>$x,
-                    'innotes'=>$n. "\n تم إضافة  $request->amount   شيكل رصيد فواتير اوريدوا التي تم شرائه اليوم "
-
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //OoredooBills
+                    'purchases_foreign_id'=>$insertedId,
+                    'amount'=> $request->amount,
+                    'notes'=>"شحن المنصة من تاجر",
                 ]);
             }
 
             elseif ($selectedValue === 'Electricity') {
-                $ElectricityBaseBalance=balance_sale::select('electricityin','innotes')->whereDate('created_at', today())->first();
-                $x=$ElectricityBaseBalance->electricityin;
-                $x+=$request->amount;
-                $n=$ElectricityBaseBalance->innotes;
-                $ElectricitySale=balance_sale::whereDate('created_at', today())->update([
-                    'electricityin'=>$x,
-                    'innotes'=>$n. "\n تم إضافة  $request->amount   شيكل رصيد كهرباء التي تم شرائه اليوم "
-
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //Electricity
+                    'purchases_foreign_id'=>$insertedId,
+                    'amount'=> $request->amount,
+                    'notes'=>"شحن المنصة من تاجر",
                 ]);
             }
 
@@ -599,13 +917,7 @@ class DailyController extends Controller
 
             // تنفيذ العمليات المطلوبة بناءً على القيمة المختارة
             if($selectedValue === 'bankOfPalestine') {
-                $bopBalance=balance_sale::select('bopin')->whereDate('created_at', today())->first();
-                $x=$bopBalance->bopin;
-                $x+=$request->amount;
-                $bopBalance=balance_sale::whereDate('created_at', today())->update([
-                    'bopin'=>$x
-                ]);
-                $sales = Outs::create([
+                $insertedID = Outs::insertGetId([
                     'item'=> $request->item_name,
                     'amount'=> $request->amount,
                     'RecordType'=> $request->RecordType,
@@ -613,25 +925,62 @@ class DailyController extends Controller
                     'notes'=> "تم إخراجها إلى رصيد وسيلة الدفع المستخدمة",
                     'userName'=> $user_data->name
                 ]);
+
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //bankOfPalestine
+                    'outs_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount,
+                    'notes'=>"تم إضافة هذا المبلغ  إلى رصيد المتصة بناءاً على  تسجيل عملية إخراج لهذه المنصة ",
+                ]);
+
+
             } elseif ($selectedValue === 'bankquds') {
-                $bankqudsBalance=balance_sale::select('bankqudsin')->whereDate('created_at', today())->first();
-                $x=$bankqudsBalance->bankqudsin;
-                $x+=$request->amount;
-                $bankqudsBalance=balance_sale::whereDate('created_at', today())->update([
-                    'bankqudsin'=>$x
+
+                $insertedID = Outs::insertGetId([
+                    'item'=> $request->item_name,
+                    'amount'=> $request->amount,
+                    'RecordType'=> $request->RecordType,
+                    'beneficiary'=> $request->beneficiary,
+                    'notes'=> "تم إخراجها إلى رصيد وسيلة الدفع المستخدمة",
+                    'userName'=> $user_data->name
                 ]);
+
+
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //bankquds
+                    'outs_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount,
+                    'notes'=>"تم إضافة هذا المبلغ  إلى رصيد المتصة بناءاً على  تسجيل عملية إخراج لهذه المنصة ",
+                ]);
+
+
             }
 
-            elseif ($selectedValue === 'jawwalpay') {
-                $jawwalpayBalance=balance_sale::select('jawwalpayin')->whereDate('created_at', today())->first();
-                $x=$jawwalpayBalance->bankqudsin;
-                $x+=$request->amount;
-                $jawwalpayBalance=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalpayin'=>$x
+            elseif ($selectedValue === 'JawwalPay') {
+                $insertedID = Outs::insertGetId([
+                    'item'=> $request->item_name,
+                    'amount'=> $request->amount,
+                    'RecordType'=> $request->RecordType,
+                    'beneficiary'=> $request->beneficiary,
+                    'notes'=> "تم إخراجها إلى رصيد وسيلة الدفع المستخدمة",
+                    'userName'=> $user_data->name
                 ]);
+
+
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //JawwalPay
+                    'outs_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount,
+                    'notes'=>"تم إضافة هذا المبلغ  إلى رصيد المتصة بناءاً على  تسجيل عملية إخراج لهذه المنصة ",
+                ]);
+
+
             }
 
-        }
+
         else {
             $sales = Outs::create([
                 'item'=> $request->item_name,
@@ -641,37 +990,97 @@ class DailyController extends Controller
                 'notes'=> $request->notes,
                 'userName'=> $user_data->name
             ]);
-        }
+        }}
 
         return redirect()->back()->with(['success'=> 'تم الحفظ بنجاح']);
     }
 
-    public function StoreLend(Request $request){
+    public function StoreLend(Request $request)
+    {
         $user_data = Auth::user();
 
-        $sales = lenddata::create([
-            'item'=> $request->item_name,
-            'RecordType'=> $request->RecordType,
-            'amount'=> $request->amount,
-            'quantity'=> $request->quantity,
-            'FirstPay'=> $request->FirstPay,
-            'debtorName'=> $request->debtor_name,
-            'notes'=> $request->notes,
-            'total'=> $request->amount * $request->quantity ,
-            'UserName'=> $user_data->name
+        $insertedID = lenddata::insertGetId([
+            'item' => $request->item_name,
+            'RecordType' => $request->RecordType,
+            'amount' => $request->amount,
+            'quantity' => $request->quantity,
+            'FirstPay' => $request->FirstPay,
+            'debtorName' => $request->debtor_name,
+            'notes' => $request->notes,
+            'total' => $request->amount * $request->quantity,
+            'UserName' => $user_data->name
         ]);
-        return redirect()->back()->with(['success'=> 'تم الحفظ بنجاح']);
+
+        $selectedValue = $request->input('RecordType');
+
+        if ($selectedValue === 'Ooredoo') {
+            $store_balance_out = balance_inout::create([
+                'record_type' => 'مخرج',
+                'platform_name' => $selectedValue, //Ooredoo
+                'loans_foreign_id' => $insertedID,
+                'amount' => $request->amount * $request->quantity,
+                'notes' => "دَين على $request->debtor_name",
+            ]);
+
+        } elseif ($selectedValue === 'Jawwal') {
+            $store_balance_out = balance_inout::create([
+                'record_type' => 'مخرج',
+                'platform_name' => $selectedValue, //Jawwal
+                'loans_foreign_id' => $insertedID,
+                'amount' => $request->amount * $request->quantity,
+                'notes' => "دَين على $request->debtor_name",
+            ]);
+        } elseif ($selectedValue === 'JawwalPay') {
+            $store_balance_out = balance_inout::create([
+                'record_type' => 'مخرج',
+                'platform_name' => $selectedValue, //JawwalPay
+                'loans_foreign_id' => $insertedID,
+                'amount' => $request->amount * $request->quantity,
+                'notes' => "دَين على $request->debtor_name",
+            ]);
+        } elseif ($selectedValue === 'OoredooBills') {
+            $store_balance_out = balance_inout::create([
+                'record_type' => 'مخرج',
+                'platform_name' => $selectedValue, //OoredooBills
+                'loans_foreign_id' => $insertedID,
+                'amount' => $request->amount * $request->quantity,
+                'notes' => "دَين على $request->debtor_name",
+            ]);
+        } elseif ($selectedValue === 'Electricity') {
+            $store_balance_out = balance_inout::create([
+                'record_type' => 'مخرج',
+                'platform_name' => $selectedValue, //Electricity
+                'loans_foreign_id' => $insertedID,
+                'amount' => $request->amount * $request->quantity,
+                'notes' => "دَين على $request->debtor_name",
+            ]);
+        } elseif ($selectedValue === 'installment_transaction') {
+            $store_in_sales = dailydata::create([
+                'item' => "دفعة أولى من معاملة تقسيط $request->debtor_name",
+                'RecordType' => "دفعة أولى",
+                'amount' => $request->FirstPay,
+                'total' => $request->FirstPay,
+                'lend_foreign_id' => $insertedID,
+                'user_name' => $user_data->name,
+                'notes' => "نوع الجهاز : $request->item_name
+                مبلغ الدَين الاجمالي : $request->amount",
+            ]);
+        } else {
+
+        }
+
+        return redirect()->back()->with(['success' => 'تم الحفظ بنجاح']);
     }
 
 
     public function StoreCustomerPay(Request $request){
         $user_data = Auth::user();
 
-        $sales = CustomerPay::create([
+        $insertedID = CustomerPay::insertGetId([
             'CustomerName'=> $request->CustomerName,
             'PayMethod'=> $request->PayMethod,
             'amount'=> $request->amount,
-            'notes'=> $request->notes,
+            'notes'=> "$request->notes",
             'userName'=> $user_data->name
         ]);
 
@@ -679,38 +1088,63 @@ class DailyController extends Controller
             $selectedValue = $request->input('PayMethod');
 
             // تنفيذ العمليات المطلوبة بناءً على القيمة المختارة
-            if($selectedValue === 'BankOfPalestine') {
-                $bopBalance=balance_sale::select('bopin','innotes')->whereDate('created_at', today())->first();
-                $x=$bopBalance->bop;
-                $x+=$request->amount;
-                $n=$bopBalance->innotes;
-                $bopBalance=balance_sale::whereDate('created_at', today())->update([
-                    'bopin'=>$x,
-                    'innotes'=>$n."\n"." رصيد بنك فلسطين فيه$request->amount من دفعة $request->CustomerName  "
-
+            if($selectedValue === 'bankOfPalestine') {
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>'bankOfPalestine',
+                    'cuspay_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount,
+                    'notes'=>"دفعة من :$request->CustomerName ",
+                ]);
+                $sales = Outs::create([
+                    'item'=> "إخراج إلى رصيد $request->PayMethod ",
+                    'amount'=> $request->amount,
+                    'RecordType'=> $selectedValue,
+                    'cuspay_foreign_id'=> $insertedID,
+                    'service_number'=> '2',
+                    'notes'=> "دفعة من :$request->CustomerName ",
+                    'userName'=> $user_data->name
                 ]);
 
-            } elseif ($selectedValue === 'BankQuds') {
-                $bankqudsBalance=balance_sale::select('bankqudsin','innotes')->whereDate('created_at', today())->first();
-                $x=$bankqudsBalance->bankquds;
-                $x+=$request->amount;
-                $n=$bankqudsBalance->innotes;
-                $bankqudsBalance=balance_sale::whereDate('created_at', today())->update([
-                    'bankqudsin'=>$x,
-                     'innotes'=>$n."\n"." رصيد بنك القدس فيه$request->amount من دفعة $request->CustomerName   "
 
+
+            } elseif ($selectedValue === 'bankquds') {
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>'bankquds',
+                    'cuspay_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount,
+                    'notes'=>"دفعة من :$request->CustomerName ",
+                ]);
+                $sales = Outs::create([
+                    'item'=> "إخراج إلى رصيد $request->PayMethod ",
+                    'amount'=> $request->amount,
+                    'notes'=> "دفعة من :$request->CustomerName ",
+                    'cuspay_foreign_id'=> $insertedID,
+                    'RecordType'=> $selectedValue,
+                    'service_number'=> '2',
+                    'userName'=> $user_data->name
                 ]);
             }
 
             elseif ($selectedValue === 'JawwalPay') {
-                $jawwalpayBalance=balance_sale::select('jawwalpayin','innotes')->whereDate('created_at', today())->first();
-                $x=$jawwalpayBalance->jawwalpay;
-                $x+=$request->amount;
-                $n=$jawwalpayBalance->innotes;
-                $jawwalpayyBalance=balance_sale::whereDate('created_at', today())->update([
-                    'jawwalpayin'=>$x,
-                    'innotes'=>$n."\n"." رصيد جوال باي فيه$request->amount من دفعة $request->CustomerName  "
+                $store_balance_in=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'platform_name'=>$selectedValue, //JawwalPay
+                    'cuspay_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount,
+                    'notes'=>"دفعة من :$request->CustomerName ",
                 ]);
+                $sales = Outs::create([
+                    'item'=> "إخراج إلى رصيد $request->PayMethod ",
+                    'amount'=> $request->amount,
+                    'notes'=> "دفعة من :$request->CustomerName ",
+                    'RecordType'=> $selectedValue,
+                    'service_number'=> '2',
+                    'cuspay_foreign_id'=> $insertedID,
+                    'userName'=> $user_data->name
+                ]);
+
             }  else {
 
         }
@@ -745,59 +1179,69 @@ class DailyController extends Controller
 
 
 
-        if($selectedValue === 'bop') {
-            $pay = Outs::create([
+        if($selectedValue === 'bankOfPalestine') {
+
+            $insertedId = Outs::insertGetId([
                 'amount'=> $request->amount,
-                'item'=> " دفعة إلى تاجر عن طريق $selectedValue",
+                'item'=> " دفعة إلى تاجر عن طريق بنك فلسطين",
+                'RecordType'=> $selectedValue,
                 'beneficiary'=> $request->merchant_name,
+                'service_number'=>'1',
                 'notes'=> $request->notes,
                 'userName'=> $user_data->name
             ]);
-            $ooredooBaseBalance=balance_sale::select('bop','notes')->whereDate('created_at', today())->first();
-            $x=$ooredooBaseBalance->bop;
-            $x+=$request->amount;
-            $n=$ooredooBaseBalance->notes;
-            $ooredooSale=balance_sale::whereDate('created_at', today())->update([
-                'bop'=>$x,
-                'notes'=>$n. "\n تم دفع $request->amount   شيكل عبر بنك فلسطين لـ $request->merchant_name "
 
+            $balance_out=balance_inout::create([
+                'record_type'=>'مخرج',
+                'platform_name'=>$selectedValue,
+                'service_number'=>'1',
+                'merchantpay_foreign_id'=>$insertedId,
+                'amount'=> $request->amount,
+                'notes'=>"دفعة إلى  :$request->merchant_name ",
             ]);
+
+
+
 
         } elseif ($selectedValue === 'bankquds') {
-            $pay = Outs::create([
+            $insertedId = Outs::insertGetId([
                 'amount'=> $request->amount,
-                'item'=> " دفعة إلى تاجر عن طريق $selectedValue",
+                'item'=> " دفعة إلى تاجر عن طريق بنك القدس",
+                'RecordType'=> $selectedValue,
                 'beneficiary'=> $request->merchant_name,
+                'service_number'=>'1',
                 'notes'=> $request->notes,
                 'userName'=> $user_data->name
             ]);
-            $bankqudsBalance=balance_sale::select('bankquds','notes')->whereDate('created_at', today())->first();
-            $x=$bankqudsBalance->bankquds;
-            $x+=$request->amount;
-            $n=$bankqudsBalance->notes;
-            $bankquds=balance_sale::whereDate('created_at', today())->update([
-                'bankquds'=>$x,
-                'notes'=>$n. "\n تم إضافة $request->amount   شيكل رصيد جوال التي تم شرائه اليوم "
 
+            $balance_out=balance_inout::create([
+                'record_type'=>'مخرج',
+                'platform_name'=>$selectedValue,
+                'service_number'=>'1',
+                'merchantpay_foreign_id'=>$insertedId,
+                'amount'=> $request->amount,
+                'notes'=>"دفعة إلى  :$request->merchant_name ",
             ]);
         }
 
-        elseif ($selectedValue === 'jawwalpay') {
-            $pay = Outs::create([
+        elseif ($selectedValue === 'JawwalPay') {
+            $insertedId = Outs::insertGetId([
                 'amount'=> $request->amount,
-                'item'=> " دفعة إلى تاجر عن طريق $selectedValue",
+                'item'=> " دفعة إلى تاجر عن طريق جوال باي",
+                'RecordType'=> $selectedValue,
                 'beneficiary'=> $request->merchant_name,
+                'service_number'=>'1',
                 'notes'=> $request->notes,
                 'userName'=> $user_data->name
             ]);
-            $JawwalPayBalance=balance_sale::select('jawwalpay','notes')->whereDate('created_at', today())->first();
-            $x=$JawwalPayBalance->jawwalpay;
-            $x+=$request->amount;
-            $n=$JawwalPayBalance->notes;
-            $jawwalpayin=balance_sale::whereDate('created_at', today())->update([
-                'jawwalpay'=>$x,
-                'notes'=>$n. "\n تم إضافة  $request->amount   شيكل رصيد جوال باي التي تم شرائه اليوم "
 
+            $balance_out=balance_inout::create([
+                'record_type'=>'مخرج',
+                'platform_name'=>$selectedValue,
+                'service_number'=>'1',
+                'merchantpay_foreign_id'=>$insertedId,
+                'amount'=> $request->amount,
+                'notes'=>"دفعة إلى  :$request->merchant_name ",
             ]);
         }
 
@@ -887,6 +1331,7 @@ class DailyController extends Controller
             return route('sales.show');
         }
     }
+
 
     public function PurchasesShow(){
 
@@ -978,11 +1423,11 @@ class DailyController extends Controller
     public function OutsShowWithDate(Request $request){
 
         $date = $request->input('date');
-        $todayTotal = lenddata::whereDate('created_at', $date)->sum('total');
+        $todayTotal = Outs::whereDate('created_at', $date)->sum('amount');
 
 
         if ($date) {
-            $Outs= lenddata::whereDate('created_at', $date)
+            $Outs= Outs::whereDate('created_at', $date)
                 ->get();
 
             return view('Show\OutsShow', compact('Outs','date','todayTotal'));
@@ -994,6 +1439,8 @@ class DailyController extends Controller
 
     public function PlatformBalanceShow(){
 
+//       $c=balance_inout::all();
+//        return $c;
         $PlatsBalance=PlatformBalance::whereDate('created_at',today() )->get();
         $date=today()->format('Y-m-d');
 
@@ -1081,7 +1528,17 @@ class DailyController extends Controller
     public function DailySummary(){
 
         $openbalance=PlatformBalance::whereDate('created_at',today() )->where('BalanceType','افتتاحي')->first();
-        $balancsales=balance_sale::whereDate('created_at',today())->first();
+        $closebalance=PlatformBalance::whereDate('created_at',today() )->where('BalanceType','نهائي')->first();
+        $balancsales=balance_inout::whereDate('created_at',today())->get();
+        if(!$openbalance) {
+            $Msg = "عليك أولاً إدخال الارصدة الافتاحية الخاصة بمحطات الشحن";
+            $SUrl = 'PlatformBalanceForm';
+            return view('ErrorPage', compact('Msg', 'SUrl'));
+        }
+
+        $balancsales_in=$balancsales->where('record_type','مدخل');
+        $balancsales_out=$balancsales->where('record_type','مخرج');
+
         $totalOoredooLoan=lenddata::whereDate('created_at',today())->where('RecordType','Ooredoo')->sum('amount');
         $totalJawwalLoan=lenddata::whereDate('created_at',today())->where('RecordType','Jawwal')->sum('amount');
         $totalOoredooBillsLoan=lenddata::whereDate('created_at',today())->where('RecordType','OoredooBills')->sum('amount');
@@ -1090,46 +1547,108 @@ class DailyController extends Controller
 
         ################## Platform Dealer Buy #########################
 
-        $Balancein=balance_sale::whereDate('created_at',today() )->first();
+
+        #Purchases From Dealer
+       $TotalOoredooBalanceinDealer=$balancsales->where('record_type','مدخل')->where('platform_name','Ooredoo')->whereNotNull('purchases_foreign_id')->sum('amount');
+       $TotalJawwalBalanceinDealer=$balancsales->where('record_type','مدخل')->where('platform_name','Jawwal')->whereNotNull('purchases_foreign_id')->sum('amount');
+       $TotalJawwalPayBalanceinDealer=$balancsales->where('record_type','مدخل')->where('platform_name','JawwalPay')->whereNotNull('purchases_foreign_id')->sum('amount');
+       $TotalOoredooBillsBalanceinDealer=$balancsales->where('record_type','مدخل')->where('platform_name','OoredooBills')->whereNotNull('purchases_foreign_id')->sum('amount');
+       $TotalElectricityBalanceinDealer=$balancsales->where('record_type','مدخل')->where('platform_name','Electricity')->whereNotNull('purchases_foreign_id')->sum('amount');
+
+        #Cash Out Balance
+       $TotalOoredooBalanceCashOut=$balancsales->where('record_type','مخرج')->where('platform_name','Ooredoo')->whereNotNull('sales_foreign_id')->sum('amount');
+       $TotalJawwalBalanceCashOut=$balancsales->where('record_type','مخرج')->where('platform_name','Jawwal')->whereNotNull('sales_foreign_id')->sum('amount');
+       $TotalJawwalPayBalanceCashOut=$balancsales->where('record_type','مخرج')->where('platform_name','JawwalPay')->whereNotNull('sales_foreign_id')->sum('amount');
+       $TotalOoredooBillsBalanceCashOut=$balancsales->where('record_type','مخرج')->where('platform_name','OoredooBills')->whereNotNull('sales_foreign_id')->sum('amount');
+       $TotalElectricityBalanceCashOut=$balancsales->where('record_type','مخرج')->where('platform_name','Electricity')->whereNotNull('sales_foreign_id')->sum('amount');
+
+       # Loans Balance
+       $TotalOoredooBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','Ooredoo')->whereNotNull('loans_foreign_id')->sum('amount');
+       $TotalJawwalBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','Jawwal')->whereNotNull('loans_foreign_id')->sum('amount');
+       $TotalJawwalPayBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','JawwalPay')->whereNotNull('loans_foreign_id')->sum('amount');
+       $TotalOoredooBillsBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','OoredooBills')->whereNotNull('loans_foreign_id')->sum('amount');
+       $TotalElectricityBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','Electricity')->whereNotNull('loans_foreign_id')->sum('amount');
+
+       $totalOoredooSimActiveCashIn=dailydata::whereDate('created_at',today())->where('RecordType','OoredooSim')->sum('amount');
+       $SIMactivationFees=lenddata::whereDate('created_at',today())->where('RecordType','OoredooSim')->sum('amount');
+
+        #Total Balance in to all platform
+        $OoredooTotalIn= $balancsales_in->where('platform_name','Ooredoo')->sum('amount');
+        $JawwalTotalIn= $balancsales_in->where('platform_name','Jawwal')->sum('amount');
+        $JawwalPayTotalIn= $balancsales_in->where('platform_name','JawwalPay')->sum('amount');
+        $OoredooBillsTotalIn= $balancsales_in->where('platform_name','OoredooBills')->sum('amount');
+        $ElectricityTotalIn= $balancsales_in->where('platform_name','Electricity')->sum('amount');
+        $BopTotalIn= $balancsales_in->where('platform_name','bankOfPalestine')->sum('amount');
+        $BankQudsTotalIn= $balancsales_in->where('platform_name','bankquds')->sum('amount');
+
+        #Total Balance Out to all platform
+        $OoredooTotalOut= $balancsales_out->where('platform_name','Ooredoo')->sum('amount');
+        $JawwalTotalOut= $balancsales_out->where('platform_name','Jawwal')->sum('amount');
+        $JawwalPayTotalOut= $balancsales_out->where('platform_name','JawwalPay')->sum('amount');
+        $OoredooBillsTotalOut= $balancsales_out->where('platform_name','OoredooBills')->sum('amount');
+        $ElectricityTotalOut= $balancsales_out->where('platform_name','Electricity')->sum('amount');
+        $BopTotalOut= $balancsales_out->where('platform_name','bankOfPalestine')->sum('amount');
+        $BankQudsTotalOut= $balancsales_out->where('platform_name','bankquds')->sum('amount');
+
+        $JawwalPayMerchantPay=$balancsales->where('record_type','مخرج')->where('platform_name','JawwalPay')->whereNotNull('merchantpay_foreign_id')->sum('amount');
+
+        #special
+        if($closebalance and $openbalance ) {
+
+            $TotalOoredooBalanceCashSale =$openbalance->OoredooBalance+$TotalOoredooBalanceinDealer-$closebalance->OoredooBalance-$TotalOoredooBalanceLoans-$TotalOoredooBalanceCashOut;
+            $TotalJawwalBalanceCashSale =$openbalance->JawwalBalance+$TotalJawwalBalanceinDealer-$closebalance->JawwalBalance-$TotalJawwalBalanceLoans-$TotalJawwalBalanceCashOut;
+            $TotalJawwalPayBalanceCashSale =$openbalance->JawwalPayBalance+$TotalJawwalPayBalanceinDealer-$closebalance->JawwalPayBalance-$TotalJawwalPayBalanceLoans-$TotalJawwalPayBalanceCashOut-$JawwalPayMerchantPay;
+            $TotalOoredooBillsBalanceCashSale =$openbalance->OoredooBillsBalance+$TotalOoredooBillsBalanceinDealer-$closebalance->OoredooBillsBalance-$TotalOoredooBillsBalanceLoans-$TotalOoredooBillsBalanceCashOut;
+            $TotalElectricityBalanceCashSale =$openbalance->ElectricityBalance+$TotalElectricityBalanceinDealer-$closebalance->ElectricityBalance-$TotalElectricityBalanceLoans-$TotalElectricityBalanceCashOut;
+
+            $OoredooEnd= $openbalance->OoredooBalance+$OoredooTotalIn-$OoredooTotalOut;
+            $JawwalEnd= $openbalance->JawwalBalance+$JawwalTotalIn-$JawwalTotalOut;
+            $JawwalPayEnd= $openbalance->JawwalPayBalance+$JawwalTotalIn-$JawwalPayTotalOut;
+            $OoredooBillsEnd= $openbalance->OoredooBillsBalance+$JawwalTotalIn-$OoredooBillsTotalOut;
+            $ElectricityEnd= $openbalance->ElectricityBalance+$JawwalTotalIn-$ElectricityTotalOut;
+
+            $BopEnd= $openbalance->BankOfPalestineBalance+$BopTotalIn-$BopTotalOut;
+            $BankQudsEnd= $openbalance->BankAlQudsBalance+$BankQudsTotalIn-$BankQudsTotalOut;
+
+
+
+        }
+
 //        $TotalOoredooBuyDealer=balance_sale::whereDate('created_at',today() )->where('RecordType','Ooredooin');
 //        $TotalJawwalBuyDealer=balance_sale::whereDate('created_at',today() )->where('RecordType','Jawwalin');
-          $TotalJawwalPayBuyDealer=DealersBuy::whereDate('created_at',today() )->where('RecordType','JawwalPay')->sum('amount');
+//        $TotalJawwalPayBuyDealer=DealersBuy::whereDate('created_at',today() )->where('RecordType','JawwalPay')->sum('amount');
 //        $TotalOoredooBillsBuyDealer=balance_sale::whereDate('created_at',today() )->where('RecordType','OoredooBillsin');
 //        $TotalElectricityBuyDealer=balance_sale::whereDate('created_at',today() )->where('RecordType','Electricityin');
 //        $TotalBankOfPalestine=balance_sale::whereDate('created_at',today() )->where('RecordType','OoredooBillsin');
 //        $TotalBankQuds=balance_sale::whereDate('created_at',today() )->where('RecordType','Electricityin');
 
-        $TotalCustPay=CustomerPay::whereDate('created_at',today() )->sum('amount');
-        $TotalSales=dailydata::whereDate('created_at',today() )->sum('total');
-        $TotalBuy=DealersBuy::whereDate('created_at',today() )->sum('amount');
+             $TotalCustPay=CustomerPay::whereDate('created_at',today() )->sum('amount');
+             $TotalSales=dailydata::whereDate('created_at',today() )->sum('total');
+             $TotalBuy=DealersBuy::whereDate('created_at',today() )->sum('amount');
 
-        if(!$openbalance){
-            $Msg= "عليك أولاً إدخال الارصدة الافتاحية الخاصة بمحطات الشحن" ;
-            $SUrl='PlatformBalanceForm';
-            return view('ErrorPage',get_defined_vars()) ;
-        }else {
-            $OoredooEnd = $openbalance->OoredooBalance - $balancsales->ooredoo - $totalOoredooLoan + $Balancein->Ooredooin;
-            $OoredooBillsEnd = $openbalance->OoredooBillsBalance - $balancsales->ooredoobills - $totalOoredooBillsLoan + $Balancein->OoredooBillsin;
-            $JawwalEnd = $openbalance->JawwalBalance - $balancsales->jawwal - $totalJawwalLoan + $Balancein->Jawwalin;
-            $JawwalpayEnd = $openbalance->JawwalPayBalance - $balancsales->jawwalpay - $totalJawwalPayLoan + $Balancein->JawwalPayin;
-            $ElectricityEnd = $openbalance->ElectricityBalance - $balancsales->electricity - $totalElectricityLoan + $Balancein->Electricityin;
-            $BopEnd = $openbalance->BankOfPalestineBalance - $balancsales->bop+$Balancein->bopin;
-            $BankQudsEnd = $openbalance->BankAlQudsBalance - $balancsales->bankquds+$Balancein->bankqudsin;
-        }
+//
+//        }else {
+//           $OoredooEnd = $openbalance->OoredooBalance - $balancsales->ooredoo - $totalOoredooLoan + $Balancein->Ooredooin;
+//            $OoredooBillsEnd = $openbalance->OoredooBillsBalance - $balancsales->ooredoobills - $totalOoredooBillsLoan + $Balancein->OoredooBillsin;
+//            $JawwalEnd = $openbalance->JawwalBalance - $balancsales->jawwal - $totalJawwalLoan + $Balancein->Jawwalin;
+//            $JawwalpayEnd = $openbalance->JawwalPayBalance - $balancsales->jawwalpay - $totalJawwalPayLoan + $Balancein->JawwalPayin;
+//            $ElectricityEnd = $openbalance->ElectricityBalance - $balancsales->electricity - $totalElectricityLoan + $Balancein->Electricityin;
+//            $BopEnd = $openbalance->BankOfPalestineBalance - $balancsales->bop+$Balancein->bopin;
+//            $BankQudsEnd = $openbalance->BankAlQudsBalance - $balancsales->bankquds+$Balancein->bankqudsin;
+//        }
         ################## Entire & Outs & Final #########################
 
         #Entire
         $DailySalesTotal=dailydata::whereDate('created_at', today())->sum('total');
         $CustomerPayTotal=CustomerPay::whereDate('created_at', today())->sum('amount');
-        $firstPayTotal=lenddata::whereDate('created_at', today())->sum('FirstPay');
 
-        $dailyEntireTotal=$DailySalesTotal+$CustomerPayTotal+$firstPayTotal;
+        $dailyEntireTotal=$DailySalesTotal+$CustomerPayTotal;
 
         #Outs
-        $OutsTotal=Outs::whereDate('created_at', today())->where('RecordType','General')->sum('amount');
+       $OutsTotal=Outs::whereDate('created_at', today())->sum('amount');
 
-        #Final
-        $finalBalance=$dailyEntireTotal-$OutsTotal;
+       #Final
+       $finalBalance=$dailyEntireTotal-$OutsTotal;
 
 
 
@@ -1224,13 +1743,15 @@ class DailyController extends Controller
     }
 
     public function noteDelete(Request $request){
-
+        $user_data = Auth::user();
         $note = note::find($request -> id);   // $Sales::where('id','') -> first();
 
         if (!$note){
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصف في قاعدة البيانات']);
         }else {
-
+            $note->update([
+                'deleted_by' => $user_data->name
+            ]);
             $note->delete();
 
             return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
@@ -1262,7 +1783,8 @@ class DailyController extends Controller
         //update data
         $note->update([
             'notes'=> $request->notes,
-            'user_name'=> $user_data->name
+            'user_name'=> $user_data->name,
+           'updated_By'=> $user_data->name
         ]);
 
         return redirect()->route('DailyNotes.show')->with(['success' => 'تم التحديث بنجاح']);

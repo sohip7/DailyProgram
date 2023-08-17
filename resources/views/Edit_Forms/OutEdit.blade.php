@@ -13,27 +13,30 @@
         </div>
     @endif
     <h1>تعديل مُخرج</h1>
-    <form action="{{route('Outs.Update',$Outs->id)}}" method="post">
+        <h6 class="text-danger"> <span style="font-size: 20px" class="required-label"> </span>   تشير إلى أن الحقل مطلوب</h6>
+
+        <form action="{{route('Outs.Update',$Outs->id)}}" method="post">
         @csrf
 
         <div class="custom-select">
             نوع العملية:
             <select id="RecordType" name="RecordType" >
 
-                <option @if($Outs->RecordType === 'General') selected @endif value="General" >مخرجات عامة </option>
-                <option @if($Outs->RecordType === 'bop') selected @endif value="bankOfPalestine" >بنك فلسطين </option>
+                <option @if($Outs->RecordType === 'Cash') selected @endif value="Cash" >مخرجات عامة نقداً </option>
+                <option @if($Outs->RecordType === 'bankOfPalestine') selected @endif value="bankOfPalestine" >بنك فلسطين </option>
                 <option @if($Outs->RecordType === 'bankquds') selected @endif value="bankquds" > بنك القدس </option>
+                <option @if($Outs->RecordType === 'JawwalPay') selected @endif value="JawwalPay" > جوال باي </option>
 
             </select>
         </div>
 
         <div class="form-group">
-            <label for="item_name">البيان</label>
+            <label for="item_name">البيان:<span class="required-label"></span></label>
             <input  placeholder="ما هو الذي تم إخراجه ؟" type="text" id="item_name" name="item_name" required value="{{$Outs->item}}">
         </div>
 
         <div class="form-group">
-            <label for="amount">المبلغ:</label>
+            <label for="amount">المبلغ:<span class="required-label"></span></label>
             <input  placeholder="أدخل المبلغ" type="number" id="amount" name="amount" required value="{{$Outs->amount}}">
         </div>
 
@@ -48,6 +51,7 @@
         </div>
         <label for="UserConfirm">
             هل أنت {{$user_data->name}}
+            <span class="required-label"></span>
             <input  id="UserConfirm" type="checkbox" required>
         </label>
 

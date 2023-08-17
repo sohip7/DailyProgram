@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!DOCTYPE html>
-<html>
 <head>
     <title>جدول بيانات مبيعات اليومية</title>
     <link rel="stylesheet" type="text/css" href="{{ asset('css/Show.css') }}">
@@ -15,6 +13,12 @@
     @if(Session::has('success'))
         <div class="alert alert-success" role="alert">
             {{ Session::get('success') }}
+        </div>
+    @endif
+
+        @if(Session::has('Error'))
+        <div class="alert alert-danger" role="alert">
+            {{ Session::get('Error') }}
         </div>
     @endif
 
@@ -56,9 +60,10 @@
 
         });
     </script>
+        <input dir="rtl" type="text" id="myInput" onkeyup="myFunction()" placeholder="ابحث عن نوع العملية..">
 
     <h1>سجل المبيعات اليومية {{$date}} </h1>
-    <table dir="rtl">
+    <table id="dataTable" dir="rtl">
         <thead>
         <tr>
             <th>الرقم</th>
@@ -67,9 +72,12 @@
             <th>المبلغ</th>
             <th>الكمية</th>
             <th>إجمالي</th>
+            <th>رسوم تفعيل</th>
             <th>الملاحظات</th>
             <th>وقت التسجيل</th>
-            <th>بواسطة المستخدم</th>
+            <th>سُجلت بواسطة المستخدم</th>
+            <th>وقت التعديل</th>
+            <th>عُدلت بواسطة المستخدم</th>
             <th>الاجراءات</th>
 
         </tr>
@@ -85,16 +93,34 @@
                 <td>{{$sale -> amount}}₪</td>
                 <td>{{$sale -> quantity}}</td>
                 <td>{{$sale -> total }}₪</td>
+                @if($sale -> osap)
+                <td>{{$sale -> osap}}₪</td>
+                @else
+                    <td>0</td>
+                @endif
                 <td>{{$sale -> notes}}</td>
                 <td>{{$sale -> created_at}}</td>
                 <td>{{$sale -> user_name}}</td>
+                @if(!$sale -> updated_at)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$sale -> updated_at}} </td>
+                @endif
+                @if(!$sale -> updated_By)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$sale -> updated_By}} </td>
+                @endif
 
                 <!--   <td><img  style="width: 90px; height: 90px;" src=""></td>-->
-
-                <td style="display: flex ; " >
-                    <a href="{{route('sales.edit',$sale->id)}}" class="btn btn-success">تعديل الصف</a>
-                    <a onclick="confirmDelete('{{route('Sales.Delete',$sale->id)}}')" class="btn btn-danger"> حذف الصف</a>
-                </td>
+                @if($sale-> RecordType=='دفعة أولى')
+                    <td class="text-secondary bold">ممنوع الحذف والتعديل من هنا</td>
+                @else
+                    <td style="display: flex " >
+                        <a  href="{{route('sales.edit',$sale->id)}}" class="btn btn-success">تعديل الصف</a>
+                        <a onclick="confirmDelete('{{route('Sales.Delete',$sale->id)}}')" class="btn btn-danger"> حذف الصف</a>
+                    </td>
+                @endif
 
             </tr>
         @endforeach
@@ -110,14 +136,39 @@
 
         </tbody>
     </table>
-    <div  class="text-box">
+
+        <div  class="text-box">
         <p> إجمالي مبيعات اليومية "أصناف" هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
         <a href="{{ route('SalesForm') }}" class="btn btn-primary">إضافة جديد</a>
     </div>
 
 
 </div>
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("dataTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+
+                }
+            }
+        }
+    }
+</script>
 </body>
-</html>
+
 
 @endsection

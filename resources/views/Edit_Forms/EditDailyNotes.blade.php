@@ -13,15 +13,18 @@
         </div>
     @endif
     <h1>تعديل ملاحظة</h1>
-    <form action="{{route('note.update',$note->id)}}" method="post">
+        <h6 class="text-danger"> <span style="font-size: 20px" class="required-label"> </span>   تشير إلى أن الحقل مطلوب</h6>
+
+        <form action="{{route('note.update',$note->id)}}" method="post">
         @csrf
         <div class="form-group">
-            <label for="notes">الملاحظة:</label>
+            <label for="notes">الملاحظة:<span class="required-label"></span></label>
             <textarea  placeholder="اكتب ملاحظات إذا كان هناك أي ارشادات " id="notes" name="notes"> {{$note->notes}}</textarea>
         </div>
 
         <label for="UserConfirm">
             هل أنت {{$user_data->name}}
+            <span class="required-label"></span>
             <input  id="UserConfirm" type="checkbox" required>
         </label>
 

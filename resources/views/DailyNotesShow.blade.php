@@ -58,7 +58,8 @@
         <th>الرقم</th>
         <th>الملاحظة</th>
         <th>وقت التسجيل</th>
-        <th>بواسطة المستخدم</th>
+        <th>سُجلت بواسطة المستخدم</th>
+        <th>عُدلت بواسطة المستخدم</th>
         <th>الاجراءات</th>
 
     </tr>
@@ -72,6 +73,11 @@
             <td>{{$notes-> notes}}</td>
             <td>{{$notes-> created_at}}</td>
             <td>{{$notes-> user_name}}</td>
+            @if(!$notes -> updated_By)
+                <td class="text-secondary fw-bold">غير معدلة</td>
+            @else
+                <td class="text-danger fw-bold"> {{$notes -> updated_By}} </td>
+            @endif
             <td style="display: flex " >
                 <a  href="{{route('note.edit',$notes->id)}}" class="btn btn-success">تعديل الملاحظة</a>
                 <a onclick="confirmDelete('{{route('note.Delete',$notes->id)}}')" class="btn btn-danger"> حذف الملاحظة</a>
@@ -91,6 +97,9 @@
 
     </tbody>
 </table>
+    <div  class="text-box">
+        <a href="{{ route('DailyNotesForm') }}" class="btn btn-primary">إضافة ملاحظة جديدة</a>
+    </div>
 
 <script >
 

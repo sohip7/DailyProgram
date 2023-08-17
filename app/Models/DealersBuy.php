@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class DealersBuy extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $table="dealersbuy";
     protected $fillable = [
@@ -19,7 +19,12 @@ class DealersBuy extends Model
         'SellerName',
         'notes',
         'created_at',
+        'updated_at',
         'UserName',
+        'updated_By',
+        'deleted_by',
+        'deleted_at',
     ];
     public $timestamps=false;
+
 }

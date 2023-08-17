@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class balance_sale extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $table="balance_sales";
     protected $fillable = [
@@ -28,8 +29,12 @@ class balance_sale extends Model
         'bankquds',
         'bankqudsin',
         'updated_at',
+        'updated_By',
+        'deleted_by',
+        'deleted_at',
         'notes',
     ];
 
+    public $timestamps=false;
 
 }

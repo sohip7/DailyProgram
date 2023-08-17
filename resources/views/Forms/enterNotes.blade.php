@@ -16,12 +16,13 @@
     <form action="{{route('notes.store')}}" method="post">
         @csrf
         <div class="form-group">
-            <label for="notes">الملاحظة:</label>
-            <textarea  placeholder="اكتب ملاحظات إذا كان هناك أي ارشادات " id="notes" name="notes"></textarea>
+            <label for="notes" >الملاحظة:<span  id="RL" class="required-label"></span></label>
+            <textarea  placeholder="اكتب ملاحظات إذا كان هناك أي ارشادات " id="notes" name="notes" required></textarea>
         </div>
 
         <label for="UserConfirm">
             هل أنت {{$user_data->name}}
+            <span class="required-label"></span>
             <input  id="UserConfirm" type="checkbox" required>
         </label>
 

@@ -55,9 +55,10 @@
 
         });
     </script>
+        <input dir="rtl" type="text" id="myInput" onkeyup="myFunction()" placeholder="ابحث عن نوع المخرج..">
 
     <h1>سجل المخرجات ليوم {{$date}} </h1>
-    <table dir="rtl">
+    <table id="dataTable" dir="rtl">
         <thead>
         <tr>
             <th>الرقم</th>
@@ -67,7 +68,9 @@
             <th>مُخرج إلى</th>
             <th>الملاحظات</th>
             <th>وقت التسجيل</th>
-            <th>بواسطة المستخدم</th>
+            <th>سُجلت بواسطة المستخدم</th>
+            <th>وقت التعديل</th>
+            <th>عُدلت بواسطة المستخدم</th>
             <th>الاجراءات</th>
 
         </tr>
@@ -85,14 +88,28 @@
                 <td>{{$out -> notes}}</td>
                 <td>{{$out -> created_at}}</td>
                 <td>{{$out -> userName}}</td>
+                @if(!$out -> updated_at)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td>{{$out -> updated_at}}</td>
+                @endif
+                @if(!$out -> updated_By)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$out -> updated_By}} </td>
+                @endif
 
                 <!--   <td><img  style="width: 90px; height: 90px;" src=""></td>-->
+                @if(!$out->service_number)
+                    <td style="display: flex " >
+                        {{--                    @if(in_array($out->RecordType ,['bankquds'] )) hidden="hidden" @endif--}}
+                        <a  href="{{route('Outs.edit',$out->id)}}" class="btn btn-success">تعديل الصف</a>
+                        <a onclick="confirmDelete('{{route('Outs.Delete',$out->id)}}')" class="btn btn-danger"> حذف الصف</a>
+                    </td>
+                @else
+                    <td>ممنوع الحذف والتعديل من هنا</td>
 
-                <td style="display: flex " >
-                    <a  href="{{route('Outs.edit',$out->id)}}" class="btn btn-success">تعديل الصف</a>
-                    <a onclick="confirmDelete('{{route('Outs.Delete',$out->id)}}')" class="btn btn-danger"> حذف الصف</a>
-                </td>
-
+                @endif
             </tr>
         @endforeach
         <script>
@@ -105,12 +122,40 @@
         </script>
         </tbody>
     </table>
-    <div class="text-box">
+        <h4 class="text-bg-info fw-bold title" id ="nodata"style="display: none"> لا بيانات بهذا الاسم</h4>
+
+        <div class="text-box">
         <p> :إجمالي المخرجات  هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
         <a href="{{ route('OutsForm') }}" class="btn btn-primary">إضافة جديد</a>
 
     </div>
 </div>
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue, nodata;
+        input = document.getElementById("myInput");
+        nodata = document.getElementById("nodata");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("dataTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                    nodata.style.display = "block";
+
+                }
+            }
+        }
+    }
+</script>
 </body>
 </html>
 

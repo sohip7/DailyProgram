@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CustomerPay extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $table="customerpay";
     protected $fillable = [
@@ -17,7 +18,11 @@ class CustomerPay extends Model
         'PayMethod',
         'notes',
         'created_at',
+        'updated_at',
         'userName',
+        'updated_By',
+        'deleted_by',
+        'deleted_at',
     ];
     public $timestamps=false;
 }

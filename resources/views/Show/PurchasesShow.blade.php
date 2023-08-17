@@ -56,9 +56,10 @@
 
             });
         </script>
+            <input dir="rtl" type="text" id="myInput" onkeyup="myFunction()" placeholder="ابحث عن نوع العملية..">
 
         <h1>سجل المشتريات اليومية ليوم {{$date}}</h1>
-        <table dir="rtl">
+        <table id="dataTable" dir="rtl">
             <thead>
             <tr>
                 <th>الرقم</th>
@@ -68,7 +69,9 @@
                 <th>اسم التاجر</th>
                 <th>الملاحظات</th>
                 <th>وقت التسجيل</th>
-                <th>بواسطة المستخدم</th>
+                <th>سُجلت بواسطة المستخدم</th>
+                <th>وقت التحديث</th>
+                <th>حُدثت بواسطة المستخدم</th>
                 <th>الاجراءات</th>
 
             </tr>
@@ -85,6 +88,16 @@
                     <td>{{$Purchase -> notes}}</td>
                     <td>{{$Purchase -> created_at}}</td>
                     <td>{{$Purchase -> UserName}}</td>
+                    @if(!$Purchase -> updated_at)
+                        <td class="text-secondary fw-bold">غير معدلة</td>
+                    @else
+                        <td>{{$Purchase -> updated_at}}</td>
+                    @endif
+                    @if(!$Purchase -> updated_By)
+                        <td class="text-secondary fw-bold">غير معدلة</td>
+                    @else
+                        <td class="text-danger fw-bold"> {{$Purchase -> updated_By}} </td>
+                    @endif
 
                     <!--   <td><img  style="width: 90px; height: 90px;" src=""></td>-->
 
@@ -106,13 +119,39 @@
             </script>
             </tbody>
         </table>
-        <div class="text-box">
+
+            <div class="text-box">
             <p>  :إجمالي المشتريات هو  <p dir="ltr" class="total-sales">  ₪{{ $todayTotal }} </p>
             <a href="{{ route('DealersBuyForm') }}" class="btn btn-primary">إضافة جديد</a>
 
         </div>
     </div>
+<script>
+    function myFunction() {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("dataTable");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+
+                }
+            }
+        }
+    }
+</script>
 </body>
+
 </html>
 
 @endsection

@@ -1,108 +1,181 @@
 @extends('layouts.app')
 @section('content')
-{{--    <style>--}}
-{{--    @font-face {--}}
-{{--    font-family: "Your_custom_font_name";--}}
-{{--    src: url("../fonts/Amiri-Regular.ttf") format('truetype');--}}
-{{--    font-weight: normal;--}}
-{{--    font-style: normal;--}}
-{{--    }--}}
 
-{{--    @font-face {--}}
-{{--    font-family: "Your_custom_font_name";--}}
-{{--    src: url("../fonts/Amiri-Bold.ttf") format('truetype');--}}
-{{--    font-weight: bold;--}}
-{{--    font-style: normal;--}}
-{{--    }--}}
-{{--    </style>--}}
+    <head>
+        <title>ملخص اليومية</title>
+        <link rel="stylesheet" type="text/css" href="{{ asset('css/SummaryPage.css') }}">
+    </head>
+<body>
     <h1 style="direction: rtl; text-align: center;">بيانات اليومية النهائية ليوم </h1>
+    <h5 class="text-warning" dir="rtl" style="margin: 50px; text-align: center">⚠️ تعني لا توجد قيمة بسبب عدم إدخالك لأرصدة المنصات الافتتاحي أو النهائي، توجه للادخال ومن ثم حدث الصفحة</h5>
 
-    <a href="{{ route('DailyData.print') }}">
-        <button style="margin-left: 45%" class="btn btn-info" type="button">طباعة اليومية</button>
+    <a style="align-content: center" href="{{ route('DailyData.print') }}">
+        <button  class="btn btn-info" type="button">طباعة اليومية</button>
     </a>
 
-    <div style=" direction: rtl; display: flex; flex-wrap: wrap; padding-top: 50px; justify-content: space-between; text-align: center " class="container">
+    <div class="container">
 
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-        <div class="card-header">رصيد أوريدوا النهائي </div>
+        <div class="card-header">رصيد أوريدوا النهائي  </div>
         <div class="card-body">
-            <h5 class="card-title text-info">{{$OoredooEnd}} شيكل</h5>
+            @if(isset($OoredooEnd))
+                <h5 class="card-title text-info">{{$OoredooEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif
             <p class="card-text"> التفاصيل: <br>
-                  الرصيد الافتتاحي : {{ $openbalance->OoredooBalance }} <br>
-                 الرصيد المشترى : {{ $Balancein->ooredooin }} <br>
-                 الرصيد المباع: {{ $balancsales->ooredoo }}
-             <br>  ديون أرصدة أوريدوا:    {{ $totalOoredooLoan }}
+                 <span> الرصيد الافتتاحي : {{ $openbalance->OoredooBalance }} <br> </span>
+                 <span>الرصيد المشترى : {{ $TotalOoredooBalanceinDealer }} <br> </span>
+                <span> الرصيد المباع نقداً: {{ $TotalOoredooBalanceCashOut }}<br> </span>
+             <span>  ديون أرصدة أوريدوا:    {{ $TotalOoredooBalanceLoans }} </span>
+               <span> @if(isset($TotalOoredooBalanceCashSale))
+                    <br>  الرصيد النهائي المدخل:    {{ $closebalance->OoredooBalance }}
+                    <br>  رصيد صندوق البيع الفوري :   {{ $TotalOoredooBalanceCashSale }}
+                @else
+                    <br>  الرصيد النهائي المدخل :    <p >⚠️</p>
+                    <br>  رصيد صندوق البيع الفوري : <p >⚠️</p>
+            @endif
+                    </span>
+                   <br>
+                   <span class="text-bg-info"> تفاصيل إضافية قد تهمك </span>
+                <br>
+                <span> مدخلات بيع الشرائح : {{ $totalOoredooSimActiveCashIn }}<br> </span>
+
+
+                   <span>  تكلفة تفعيل شرائح أوريدوا:    {{ $SIMactivationFees }}</span>
+
+
             </p>
         </div>
     </div>
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد جوال النهائي</div>
         <div class="card-body">
-            <h5 class="card-title text-info">{{$JawwalEnd}} شيكل </h5>
+            @if(isset($JawwalEnd))
+                <h5 class="card-title text-info">{{$JawwalEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->JawwalBalance }} <br>
-                الرصيد المشترى : {{ $Balancein->jawwalin }} <br>
-                الرصيد المباع: {{ $balancsales->jawwal }}
-                <br>  ديون أرصدة جوال:    {{ $totalJawwalLoan }}
+                الرصيد المشترى : {{ $TotalJawwalBalanceinDealer }} <br>
+                الرصيد المباع نقداً: {{ $TotalJawwalBalanceCashOut }}
+                <br>  ديون أرصدة جوال:    {{ $TotalJawwalBalanceLoans }}
+                <span> @if(isset($TotalJawwalBalanceCashSale))
+                        <br>  الرصيد النهائي المدخل:    {{ $closebalance->JawwalBalance }}
+                        <br>  رصيد صندوق البيع الفوري :   {{ $TotalJawwalBalanceCashSale }}
+                    @else
+                        <br>  الرصيد النهائي المدخل :    <p >⚠️</p>
+                        <br>  رصيد صندوق البيع الفوري : <p >⚠️</p>
+                    @endif
+                    </span>
+                <br>
             </p>
         </div>
     </div>
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصبد جوال باي النهائي</div>
         <div class="card-body">
-            <h5 class="card-title text-info">{{$JawwalpayEnd}} شيكل</h5>
+            @if(isset($JawwalPayEnd))
+                <h5 class="card-title text-info">{{$JawwalPayEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->JawwalPayBalance }} <br>
-                الرصيد المشترى فقط  : {{ $TotalJawwalPayBuyDealer }} <br>
-                الرصيد الداخل مع المشترى  : {{ $Balancein->jawwalpayin }} <br>
-                الرصيد المباع: {{ $balancsales->jawwalpay }}
-                <br>  ديون أرصدة جوال باي:    {{ $totalJawwalPayLoan }}
+                الرصيد المشترى   : {{ $TotalJawwalPayBalanceinDealer }} <br>
+{{--                الرصيد الداخل مع المشترى  : {{ $Balancein->jawwalpayin }} <br>--}}
+                الرصيد المباع نقداً: {{ $TotalJawwalPayBalanceCashOut }}
+                <br>  ديون أرصدة جوال باي:    {{ $TotalJawwalPayBalanceLoans }}
+                <span> @if(isset($TotalJawwalPayBalanceCashSale))
+                <br>  الرصيد النهائي المدخل:    {{ $closebalance->JawwalPayBalance }}
+                <br>  رصيد صندوق البيع الفوري :   {{ $TotalJawwalPayBalanceCashSale }}
+                @else
+                    <br>  الرصيد النهائي المدخل :    <p >⚠️</p>
+            <br>  رصيد صندوق البيع الفوري : <p >⚠️</p>
+            @endif
+            </span>
+                <br>
+                <span class="text-bg-info"> تفاصيل إضافية قد تهمك </span>
+                <br>
+                <span>  إجمالي دفعات لتجار تمت عبر جوال باي : {{ $JawwalPayMerchantPay }} </span>
+
+
             </p>
         </div>
     </div>
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد فواتير أوريدوا النهائي</div>
         <div class="card-body">
-            <h5 class="card-title text-info">{{$OoredooBillsEnd}} شيكل </h5>
+            @if(isset($OoredooBillsEnd))
+                <h5 class="card-title text-info">{{$OoredooBillsEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->OoredooBillsBalance }} <br>
-                الرصيد المشترى : {{ $Balancein->ooredoobillsin  }} <br>
-                الرصيد المباع: {{ $balancsales->ooredoobills }}
-                <br>  ديون فواتير أوريدوا:    {{ $totalOoredooBillsLoan }}
-            </p>
+                الرصيد المشترى : {{ $TotalOoredooBillsBalanceinDealer  }} <br>
+                الرصيد المباع نقداً: {{ $TotalOoredooBillsBalanceCashOut }}
+                <br>  ديون فواتير أوريدوا:    {{ $TotalOoredooBillsBalanceLoans }}
+                <span> @if(isset($TotalOoredooBillsBalanceCashSale))
+                        <br>  الرصيد النهائي المدخل:    {{ $closebalance->OoredooBillsBalance }}
+                        <br>  رصيد صندوق البيع الفوري :   {{ $TotalOoredooBillsBalanceCashSale }}
+                    @else
+                        <br>  الرصيد النهائي المدخل :    <p >⚠️</p>
+                        <br>  رصيد صندوق البيع الفوري : <p >⚠️</p>
+                    @endif
+            </span>
         </div>
     </div>
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد الكهرباء النهائي</div>
         <div class="card-body">
-            <h5  class="card-title text-info ">{{$ElectricityEnd}} شيكل </h5>
+            @if(isset($ElectricityEnd))
+                <h5 class="card-title text-info">{{$ElectricityEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->ElectricityBalance }} <br>
-                الرصيد المشترى : {{ $Balancein->electricityin }} <br>
-                الرصيد المباع: {{ $balancsales->electricity }}
-                <br>  ديون أرصدة الكهرباء:    {{ $totalElectricityLoan }}
+                الرصيد المشترى : {{ $TotalElectricityBalanceinDealer }} <br>
+                الرصيد المباع نقداً: {{ $TotalElectricityBalanceCashOut }}
+                <br>  ديون أرصدة الكهرباء:    {{ $TotalElectricityBalanceLoans }}
+                <span> @if(isset($TotalElectricityBalanceCashSale))
+                        <br>  الرصيد النهائي المدخل:    {{ $closebalance->ElectricityBalance }}
+                        <br>  رصيد صندوق البيع الفوري :   {{ $TotalElectricityBalanceCashSale }}
+                    @else
+                        <br>  الرصيد النهائي المدخل :    <p >⚠️</p>
+                        <br>  رصيد صندوق البيع الفوري : <p >⚠️</p>
+                    @endif
+            </span>
             </p>
         </div>
     </div>
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد بنك فلسطين النهائي</div>
         <div class="card-body">
-            <h5 class="card-title text-info">{{$BopEnd}} شيكل </h5>
-            <p class="card-text">التفاصيل: <br>
+            @if(isset($BopEnd))
+                <h5 class="card-title text-info">{{$BopEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif            <p class="card-text">التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->BankOfPalestineBalance }}<br>
-                الرصيد الداخل : {{ $Balancein->bopin }}<br>
-                الرصيد المُخرج: {{ $balancsales->bop }}
+                        الرصيد الداخل : {{ $BopTotalIn }}<br>
+                الرصيد الخارج: {{ $BopTotalOut }}
             </p>
         </div>
     </div>
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد بنك القدس</div>
         <div class="card-body ">
-            <h5 class="card-title text-info">{{$BankQudsEnd}} شيكل </h5>
-            <p class="card-text">التفاصيل: <br>
+            @if(isset($BankQudsEnd))
+                <h5 class="card-title text-info">{{$BankQudsEnd}} شيكل</h5>
+            @else
+                <h5 class="card-title text-danger">⚠️</h5>
+            @endif            <p class="card-text">التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->BankAlQudsBalance }}<br>
-                الرصيد الداخل : {{ $Balancein->bankqudsin }}<br>
-                الرصيد المُخرج: {{ $balancsales->bankquds }}
+                الرصيد الداخل : {{ $BankQudsTotalIn }}<br>
+                الرصيد المُخرج: {{ $BankQudsTotalOut }}
             </p>
         </div>
     </div>
@@ -111,7 +184,7 @@
         <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
             <div class="card-header">إجمالي دفعات من الزبائن</div>
             <div class="card-body">
-                <h5  class="card-title text-info ">{{$TotalCustPay}} شيكل </h5>
+               <h5  class="card-title text-info ">{{$TotalCustPay}} شيكل </h5>
                 <p class="card-text"> التفاصيل: <br>
 
                 </p>
@@ -120,7 +193,7 @@
         <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
             <div class="card-header">إجمالي مبيعات اليوم</div>
             <div class="card-body">
-                <h5 class="card-title text-info">{{$TotalSales}} شيكل </h5>
+            <h5 class="card-title text-info">{{$TotalSales}} شيكل </h5>
                 <p class="card-text">التفاصيل: <br>
 
                 </p>
@@ -136,8 +209,8 @@
             </div>
         </div>
 
+        </div>
 
-</div>
     <hr >
     <div style="text-align: center ;">
     <div class="card text-white bg-secondary mb-3" style=" margin-left: 40%; direction: rtl; max-width: 18rem;">
@@ -165,6 +238,6 @@
         </div>
     </div>
     </div>
-
+</body>
 
 @endsection

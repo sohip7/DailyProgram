@@ -23,6 +23,7 @@ class PlatformBalance extends Model
         'notes',
         'created_at',
         'userName',
+        'updated_By',
     ];
     public $timestamps=false;
 }

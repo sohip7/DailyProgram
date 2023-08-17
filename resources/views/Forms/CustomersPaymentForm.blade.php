@@ -13,24 +13,26 @@
         </div>
     @endif
     <h1>إضافة دفعة من زبون</h1>
-    <form action="{{route('CustomerPay.store')}}" method="post">
+        <h6 class="text-danger"> <span style="font-size: 20px" class="required-label"> </span>   تشير إلى أن الحقل مطلوب</h6>
+
+        <form action="{{route('CustomerPay.store')}}" method="post">
         @csrf
         <div class="custom-select">
             طريقة الدفع:
             <select id="PayMethod" name="PayMethod">
                 <option value="Cash" selected>كاش </option>
-                <option value="BankOfPalestine">بنك فلسطين </option>
-                <option value="BankQuds">بنك القدس</option>
+                <option value="bankOfPalestine">بنك فلسطين </option>
+                <option value="bankquds">بنك القدس</option>
                 <option value="JawwalPay">جوال باي </option>
             </select>
         </div>
         <div class="form-group">
-            <label for="CustomerName">اسم الزبون:</label>
+            <label for="CustomerName">اسم الزبون:<span class="required-label"></span></label>
             <input  placeholder="أدخل اسم الزبون الذي دفع" type="text" id="CustomerName" name="CustomerName" required>
         </div>
 
         <div class="form-group">
-            <label for="amount">المبلغ:</label>
+            <label for="amount">المبلغ:<span class="required-label"></span></label>
             <input  placeholder="أدخل المبلغ" type="number" id="amount" name="amount" required>
         </div>
 
@@ -40,6 +42,7 @@
         </div>
         <label for="UserConfirm">
             هل أنت {{$user_data->name}}
+            <span class="required-label"></span>
             <input  id="UserConfirm" type="checkbox" required>
         </label>
 

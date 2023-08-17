@@ -19,21 +19,25 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
-<body>
-    <div id="app">
+<body >
+        <div id="app" >
+
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/home') }}">
-                    SYSTEM
+                <a class="navbar-brand center" href="{{ url('/home') }}">
+                    MC-SYSTEM V0.1B
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <div style="flex: 0%;"></div>
+
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="test">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
 
                     <!-- Left Side Of Navbar -->
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div  class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav">
                         <!-- Left Side Of Navbar -->
 
@@ -70,6 +74,7 @@
                                 <a  class="dropdown-item" href="{{ route('Loans.show') }}">عرض حركات تسجيل الديون الجديدة </a>
                                 <a  class="dropdown-item" href="{{ route('Outs.show') }}">عرض حركات تسجيل المخرجات "المصروفات"</a>
                                 <a  class="dropdown-item" href="{{ route('Purchases.show') }}">عرض حركات تسجيل مشتريات</a>
+                                <a  class="dropdown-item" href="{{ route('PayMerchant.show') }}">عرض حركات دفع لتجار الكتروني</a>
                                 <a  class="dropdown-item" href="{{ route('PlatformBalance.show') }}">عرض أرصدة منصات الشحن المسجلة</a>
                                 <a  class="dropdown-item" href="{{ route('BalanceSales.show') }}">عرض مبيعات الرصيد</a>
                                 <a  class="dropdown-item" href="{{ route('DailySummary.show') }}">عرض ملخص اليومية </a>
@@ -125,4 +130,21 @@
         </main>
     </div>
 </body>
+{{--footer--}}
+<div  class="container my-5">
+
+    <footer class="bg-light text-center">
+
+        <!-- Copyright -->
+        <div class="text-center text-white p-3" style="background-color: #1c6ca1">
+          MC-System  &copy; {{now()->year}} Copyright
+        </div>
+        <p style="display: inline" class="text-black ">♥ By: Sohip Kurraz </p>
+
+        <!-- Copyright -->
+    </footer>
+
+</div>
+<!-- End of .container -->
+
 </html>

@@ -18,12 +18,19 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/', function () {
-    return view('home');
+    $user_data = Auth::user();
+
+    return view('home',get_defined_vars());
+
+})->middleware('auth');
+
+Route::get('/InP', function () {
+    return view('instructionsPage');
 });
 
-Route::get('enter_notes', function () {
-    return view('EnterDailyNotes');
-});
+#Route::get('enter_notes', function () {
+#    return view('EnterDailyNotes');
+#})->name('enterNotes');
 
 
 
@@ -33,16 +40,18 @@ Route::get('print_daily_data', 'App\Http\Controllers\DailyController@print_daily
 
 
 
-Route::get('enterDailyNotes', 'App\Http\Controllers\DailyController@enterDailyNotes')->name('DailyNotesForm');
 Route::get('DailyNotesShow', 'App\Http\Controllers\DailyController@DailyNotesShow')->name('DailyNotes.show');
 Route::post('DailyNotesShow', 'App\Http\Controllers\DailyController@DailyNotesWithDate')->name('notesWithDate.show');
 
-Route::post('storenotes', 'App\Http\Controllers\DailyController@storenotes')->name('notes.store');
-Route::get('noteDelete/{id}', 'App\Http\Controllers\DailyController@noteDelete')->name('note.Delete');
-Route::get('noteEdit/{id}', 'App\Http\Controllers\DailyController@noteEdit')->name('note.edit');
-Route::post('noteUpdate/{id}', 'App\Http\Controllers\DailyController@noteUpdate')->name('note.update');
+Route::group(['prefix'=> 'DailyNotes' , 'middleware'=>'auth'], function () {
 
+    Route::get('enterDailyNotes', 'App\Http\Controllers\DailyController@enterDailyNotes')->name('DailyNotesForm');
+    Route::post('storenotes', 'App\Http\Controllers\DailyController@storenotes')->name('notes.store');
+    Route::get('noteDelete/{id}', 'App\Http\Controllers\DailyController@noteDelete')->name('note.Delete');
+    Route::get('noteEdit/{id}', 'App\Http\Controllers\DailyController@noteEdit')->name('note.edit');
+    Route::post('noteUpdate/{id}', 'App\Http\Controllers\DailyController@noteUpdate')->name('note.update');
 
+});
 Route::group(['prefix'=> 'DailyForms' , 'middleware'=>'auth'], function (){
 
     Route::get('SalesForm', 'App\Http\Controllers\DailyController@SalesForm')->name('SalesForm');
@@ -66,6 +75,7 @@ Route::group(['prefix'=> 'DailyForms' , 'middleware'=>'auth'], function (){
     Route::Post('StorePaytoMerchant', 'App\Http\Controllers\DailyController@store_pay_to_merchant')->name('payToMerchant.store');
 
 
+
     Route::get('DealersBuyForm', 'App\Http\Controllers\DailyController@DealersBuyForm')->name('DealersBuyForm');
     Route::post('StoreDealersBuy', 'App\Http\Controllers\DailyController@StoreDealersBuy')->name('DealerBuy.store');
 
@@ -79,7 +89,7 @@ Route::group(['prefix'=> 'DataShow' , 'middleware'=>'auth'], function () {
 
     Route::get('SalesShow', 'App\Http\Controllers\DailyController@SalesShow')->name('sales.show');
     Route::post('SalesShow', 'App\Http\Controllers\DailyController@SalesShowWhithDates')->name('SalesShow.apply.dates');
-    Route::get('SalesDelete/{id}', 'App\Http\Controllers\DailyController@SalesShowDelete')->name('Sales.Delete');
+    Route::get('SalesDelete/{id}', 'App\Http\Controllers\DailyController@SalesDelete')->name('Sales.Delete');
     Route::get('EditSales/{id}', 'App\Http\Controllers\DailyController@SalesEdit')->name('sales.edit');
     Route::post('SalesUpdate/{id}', 'App\Http\Controllers\DailyController@SalesUpdate')->name('Sales.Update');
 
@@ -122,6 +132,14 @@ Route::group(['prefix'=> 'DataShow' , 'middleware'=>'auth'], function () {
 
     Route::get('balance-sales-show', 'App\Http\Controllers\DailyController@balance_sales_show')->name('BalanceSales.show');
     Route::post('balance-sales-show', 'App\Http\Controllers\DailyController@balanceSalesShowWithDate')->name('balanceSalesShowWithDate.show');
+
+    Route::get('PayMerchantShow', 'App\Http\Controllers\DailyController@PayMerchantShow')->name('PayMerchant.show');
+    Route::post('PayMerchantShow', 'App\Http\Controllers\DailyController@MerchantPaysWithDate')->name('MerchantPaysWithDate.show');
+    Route::get('PayMerchant/{id}', 'App\Http\Controllers\DailyController@PayMerchantDelete')->name('PayMerchant.Delete');
+    Route::get('EditPayMerchant/{id}', 'App\Http\Controllers\DailyController@PayMerchantEdit')->name('PayMerchant.edit');
+    Route::post('PayMerchantUpdate/{id}', 'App\Http\Controllers\DailyController@PayMerchantUpdate')->name('PayMerchant.Update');
+
+
 
 
 });

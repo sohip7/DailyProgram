@@ -27,7 +27,7 @@
 
     <form action="{{ route('OutsShowWithDate.show') }}" method="post">
         @csrf
-        <div class="date-range-container">
+        <div dir="ltr" class="date-range-container">
             <button class="apply-dates-btn" type="submit">تطبيق التواريخ</button>
 
             <input type="text" id="date" name="date" value="{{$date}}" placeholder="من" readonly>

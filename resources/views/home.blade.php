@@ -1,7 +1,11 @@
 @extends('layouts.app')
 {{--route('SalesForm'--}}
 @section('content')
+
     <div  class="greeting">
+        <div dir="ltr" style="display: inline" class="text-success">
+            {{  explode(' ', $user_data->name)[0] }}
+        </div>
         <script>
             const currentHour = new Date().getHours();
 
@@ -11,9 +15,7 @@
                 document.write("مساء الخير ");
             }
         </script>
-        <div style="display: inline" class="text-success">
-            {{  explode(' ', $user_data->name)[0] }}
-        </div>
+
     </div>
 
 

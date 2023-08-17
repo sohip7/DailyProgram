@@ -1591,13 +1591,14 @@ class DailyController extends Controller
         $BankQudsTotalOut= $balancsales_out->where('platform_name','bankquds')->sum('amount');
 
         $JawwalPayMerchantPay=$balancsales->where('record_type','مخرج')->where('platform_name','JawwalPay')->whereNotNull('merchantpay_foreign_id')->sum('amount');
+        $JawwalPayCustPay=$balancsales->where('record_type','مدخل')->where('platform_name','JawwalPay')->whereNotNull('cuspay_foreign_id')->sum('amount');
 
         #special
         if($closebalance and $openbalance ) {
 
             $TotalOoredooBalanceCashSale =$openbalance->OoredooBalance+$TotalOoredooBalanceinDealer-$closebalance->OoredooBalance-$TotalOoredooBalanceLoans-$TotalOoredooBalanceCashOut;
             $TotalJawwalBalanceCashSale =$openbalance->JawwalBalance+$TotalJawwalBalanceinDealer-$closebalance->JawwalBalance-$TotalJawwalBalanceLoans-$TotalJawwalBalanceCashOut;
-            $TotalJawwalPayBalanceCashSale =$openbalance->JawwalPayBalance+$TotalJawwalPayBalanceinDealer-$closebalance->JawwalPayBalance-$TotalJawwalPayBalanceLoans-$TotalJawwalPayBalanceCashOut-$JawwalPayMerchantPay;
+            $TotalJawwalPayBalanceCashSale =$openbalance->JawwalPayBalance+$TotalJawwalPayBalanceinDealer-$closebalance->JawwalPayBalance-$TotalJawwalPayBalanceLoans-$TotalJawwalPayBalanceCashOut-$JawwalPayMerchantPay+$JawwalPayCustPay;
             $TotalOoredooBillsBalanceCashSale =$openbalance->OoredooBillsBalance+$TotalOoredooBillsBalanceinDealer-$closebalance->OoredooBillsBalance-$TotalOoredooBillsBalanceLoans-$TotalOoredooBillsBalanceCashOut;
             $TotalElectricityBalanceCashSale =$openbalance->ElectricityBalance+$TotalElectricityBalanceinDealer-$closebalance->ElectricityBalance-$TotalElectricityBalanceLoans-$TotalElectricityBalanceCashOut;
 

@@ -84,7 +84,6 @@
             <p class="card-text"> التفاصيل: <br>
                 الرصيد الافتتاحي : {{ $openbalance->JawwalPayBalance }} <br>
                 الرصيد المشترى   : {{ $TotalJawwalPayBalanceinDealer }} <br>
-{{--                الرصيد الداخل مع المشترى  : {{ $Balancein->jawwalpayin }} <br>--}}
                 الرصيد المباع نقداً: {{ $TotalJawwalPayBalanceCashOut }}
                 <br>  ديون أرصدة جوال باي:    {{ $TotalJawwalPayBalanceLoans }}
                 <span> @if(isset($TotalJawwalPayBalanceCashSale))
@@ -99,6 +98,7 @@
                 <span class="text-bg-info"> تفاصيل إضافية قد تهمك </span>
                 <br>
                 <span>  إجمالي دفعات لتجار تمت عبر جوال باي : {{ $JawwalPayMerchantPay }} </span>
+                <span>  إجمالي دفعات زبائن تمت عبر جوال باي : {{ $JawwalPayCustPay }} </span>
 
 
             </p>

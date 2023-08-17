@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+//Route::group(['middleware' => ['admin.verify']], function () {
+//    Route::get('/register', 'Auth\RegisterController@showRegistrationForm');
+//    Route::post('/register', 'Auth\RegisterController@register');
+//});
 
 Auth::routes();
 
@@ -27,6 +31,7 @@ Route::get('/', function () {
 Route::get('/InP', function () {
     return view('instructionsPage');
 });
+
 
 #Route::get('enter_notes', function () {
 #    return view('EnterDailyNotes');

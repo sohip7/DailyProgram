@@ -21,7 +21,7 @@
 
     <form action="{{ route('PlatformBalanceShowWithDate.show') }}" method="post">
         @csrf
-        <div class="date-range-container">
+        <div dir="ltr" class="date-range-container">
             <button class="apply-dates-btn" type="submit">تطبيق التواريخ</button>
 
             <input type="text" id="date" name="date" value="{{$date}}" placeholder="من" readonly>
@@ -97,6 +97,7 @@
 
 
                 <td  >
+
                     <a href="{{route('PlatformBalance.edit',$PtsBal->id)}}" class="btn btn-success">تعديل الصف</a>
                     <a onclick="confirmDelete('{{route('PlatformBalance.Delete',$PtsBal->id)}}')" class="btn btn-danger"> حذف الصف</a>
                 </td>

@@ -92,15 +92,15 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}">تسجيل دخول</a>
                                 </li>
                             @endif
 
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
+{{--                            @if (Route::has('register'))--}}
+{{--                                <li class="nav-item">--}}
+{{--                                    <a class="nav-link" href="{{ route('register') }}">تسجيل مستخدم جديد</a>--}}
+{{--                                </li>--}}
+{{--                            @endif--}}
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -111,7 +111,7 @@
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        تسحيل خروج
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -131,20 +131,14 @@
     </div>
 </body>
 {{--footer--}}
-<div  class="container my-5">
+<footer class="bg-light text-center text-lg-start">
+    <!-- Copyright -->
+    <div class="text-center p-1" style="background-color: rgba(0, 0, 0, 0.2);">
+      MC-System  &copy;{{ now()->year }} Copyright
+    </div>
 
-    <footer class="bg-light text-center">
-
-        <!-- Copyright -->
-        <div class="text-center text-white p-3" style="background-color: #1c6ca1">
-          MC-System  &copy; {{now()->year}} Copyright
-        </div>
-        <p style="display: inline" class="text-black ">♥ By: Sohip Kurraz </p>
-
-        <!-- Copyright -->
-    </footer>
-
-</div>
+    <!-- Copyright -->
+</footer>
 <!-- End of .container -->
 
 </html>

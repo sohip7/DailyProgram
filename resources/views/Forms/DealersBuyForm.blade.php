@@ -1,6 +1,23 @@
 @extends('layouts.app')
 @section('content')
+    <script>
+        function vh(value){
+            const item_name=document.getElementById('item_name');
+            if(value=== "Ooredoo"){
+                item_name.value = "رصيد أوريدوا";
+            }else if(value=== "Jawwal"){
+                item_name.value = "رصيد جوال";
+            } else if(value=== "OoredooBills"){
+                item_name.value = "فواتير أوريدوا";
+            } else if(value=== "JawwalPay"){
+                item_name.value = "جوال باي";
+            } else if(value=== "Electricity"){
+                item_name.value = "رصيد كهرباء";
+            }
 
+
+        }
+    </script>
 <head>
     <title> إضافة مشتريات جديد</title>
     <link rel="stylesheet" href="{{ asset('css/Forms.css') }}">
@@ -16,9 +33,9 @@
         <h6 class="text-danger"> <span style="font-size: 20px" class="required-label"> </span>   تشير إلى أن الحقل مطلوب</h6>
         <form action="{{route('DealerBuy.store')}}" method="post">
         @csrf
-        <div class="custom-select">
+        <div class="custom-select" >
             نوع العملية:
-            <select id="RecordType" name="RecordType">
+            <select id="RecordType" name="RecordType" onchange="vh(this.value)">
                 <option value="General" selected>مشتريات عامة </option>
                 <option value="Ooredoo">رصيد أوريدوا </option>
                 <option value="Jawwal">رصيد جوال </option>
@@ -27,6 +44,7 @@
                 <option value="Electricity"> كهرباء</option>
             </select>
         </div>
+
         <div class="form-group">
             <label for="item_name">البيان:<span class="required-label"></span></label>
             <input  placeholder="ما هو الذي تم شراءه ؟" type="text" id="item_name" name="item_name" required>

@@ -29,6 +29,8 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    direction: rtl;
+
 
 }
 
@@ -86,6 +88,7 @@ tbody tr:hover {
 }
 
 .date-label {
+    direction: rtl;
     font-family: 'Cairo', sans-serif;
     display: inline-block; /* لجعل العنصر يظهر على سطر واحد مع النص */
     margin-right: 10px;
@@ -100,6 +103,7 @@ tbody tr:hover {
 
 #date-from,
 #date-to {
+    direction: rtl;
     font-family: 'Cairo', sans-serif;
     font-size: 16px;
     padding: 10px;
@@ -110,6 +114,7 @@ tbody tr:hover {
 }
 
 .apply-dates-btn {
+    direction: rtl;
     font-family: 'Cairo', sans-serif;
     font-size: 16px;
     padding: 10px 20px;

@@ -1,5 +1,6 @@
 @extends('layouts.app')
 {{--route('SalesForm'--}}
+@section('title','الصفحة الرئيسية')
 @section('content')
 
     <div  class="greeting">

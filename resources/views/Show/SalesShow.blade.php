@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title','عرض المبيعات')
 @section('content')
 <head>
     <title>جدول بيانات مبيعات اليومية</title>

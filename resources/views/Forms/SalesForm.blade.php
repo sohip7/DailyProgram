@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','إضافة مبيعات')
 @section('content')
 
 <head>
@@ -18,6 +19,7 @@
             {{ Session::get('Error') }}
         </div>
     @endif
+
     <h1>إضافة بيع صنف جديد</h1>
         <h6 class="text-danger"> <span style="font-size: 20px" class="required-label"> </span>   تشير إلى أن الحقل مطلوب</h6>
 
@@ -38,27 +40,20 @@
                 <!-- يمكنك إضافة المزيد من الخيارات هنا -->
             </select>
         </div>
-        <script>
-            function vh(value){
-                const actP=document.getElementById('actP');
-                const item_name=document.getElementById('item_name');
-                actP.style.display= value == 'OoredooSim' ? "block" : "none";
-                document.getElementById('item_name').value= value=='OoredooSim' ? 'تفعيل شريحة' : '';
-            if(value=== "Ooredoo"){
-                item_name.value = "رصيد أوريدوا";
-            }else if(value=== "Jawwal"){
-                item_name.value = "رصيد جوال";
-            } else if(value=== "OoredooBills"){
-                item_name.value = "فواتير أوريدوا";
-            } else if(value=== "JawwalPay"){
-                item_name.value = "جوال باي";
-            } else if(value=== "Electricity"){
-                item_name.value = "رصيد كهرباء";
-            }
+            <div class="custom-select">
+            <!-- JPATS=> jawwal pay account type-->
+            <div style="display: none" id="JPATS" class="custom-select">
+                نوع الحساب الذي تم الايداع منه:
+                <select id="JPAccountType" name="JPAccountType"  >
 
+                    <option value="agent" selected>حساب الوكيل </option>
+                    <option value="merchant" >حساب التاجر </option>
 
-            }
-        </script>
+                    <!-- يمكنك إضافة المزيد من الخيارات هنا -->
+                </select>
+            </div>
+            </div>
+
 
 
         <div  class="form-group">
@@ -75,7 +70,10 @@
             <label for="quantity">الكمية:<span class="required-label"></span></label>
             <input type="number" id="quantity" name="quantity" value="1">
         </div>
-
+            <!-- OSSW => Ooredoo sim Store Warning-->
+            <div  style="display: none" id="OSSW" class="alert alert-info" role="alert">
+                يرجى وضع رسوم التفعيل 0 إذا تم شحن الشريحة الجديدة في يوم غير هذا اليوم
+            </div>
         <div id="actP" class="form-group" style="display: none" >
             <label for="ActivePrice">رسوم التفعيل:<span  id="RL" class="required-label"></span></label>
             <input type="number" id="ActivePrice" name="ActivePrice" value="1">
@@ -85,45 +83,66 @@
             <label for="notes">ملاحظات:</label>
             <textarea  placeholder="اكتب ملاحظات إذا كان هناك أي ارشادات " id="notes" name="notes"></textarea>
         </div>
-        <label class="label" for="UserConfirm">
+        <label  for="UserConfirm">
             هل أنت {{$user_data->name}}
-            <input  id="UserConfirm" type="checkbox" required>
+            <span class="required-label"></span>
+            <input class="UserCheckBox" id="UserConfirm" type="checkbox" required>
         </label>
 
         <button type="submit" >إضافة</button>
     </form>
 {{--        <a href="{{ route('sales.show') }}" class="btn btn-primary">عرض حركات تسجيل الأصناف اليوم</a>--}}
-        <script>
-
-
-            function vi() {
-                const inputValue = document.getElementById("amount").value;
-                const errorMessage = document.getElementById("error-message");
-
-                if (inputValue < 0) {
-                    showErrorMessage('انتبه! انت تدخل قيمة سالبة')
-                } else {
-                    errorMessage.textContent = "";
-                }
-            }
-
-
-            function showErrorMessage(message) {
-                const errorMessage = document.getElementById("error-message");
-                errorMessage.textContent = message;
-                errorMessage.style.display = "block";
-
-                setTimeout(() => {
-                    errorMessage.style.display = "none";
-                }, 7000); // Hide after 3 seconds (adjust as needed)
-            }
-
-
-
-        </script>
-
 
 </div>
+<script>
+
+
+    function vi() {
+        const inputValue = document.getElementById("amount").value;
+        const errorMessage = document.getElementById("error-message");
+
+        if (inputValue < 0) {
+            showErrorMessage('انتبه! انت تدخل قيمة سالبة')
+        } else {
+            errorMessage.textContent = "";
+        }
+    }
+
+
+    function showErrorMessage(message) {
+        const errorMessage = document.getElementById("error-message");
+        errorMessage.textContent = message;
+        errorMessage.style.display = "block";
+
+        setTimeout(() => {
+            errorMessage.style.display = "none";
+        }, 7000); // Hide after 3 seconds (adjust as needed)
+    }
+
+    function vh(value){
+        const actP=document.getElementById('actP');
+        actP.style.display= value == 'OoredooSim' ? "block" : "none";
+        document.getElementById('item_name').value= value=='OoredooSim' ? 'تفعيل شريحة' : '';
+        document.getElementById('JPATS').style.display= value=='JawwalPay' ? 'block' : 'none';
+        if(value=== "Ooredoo"){
+            item_name.value = "رصيد أوريدوا";
+        }else if(value=== "Jawwal"){
+            item_name.value = "رصيد جوال";
+        } else if(value=== "OoredooBills"){
+            item_name.value = "فواتير أوريدوا";
+        } else if(value=== "JawwalPay"){
+            item_name.value = "جوال باي";
+        } else if(value=== "Electricity"){
+            item_name.value = "رصيد كهرباء";
+        } else if(value=== "OoredooSim"){
+            document.getElementById('OSSW').style.display= "block";
+
+        }
+
+
+    }
+
+</script>
 
 
 

@@ -1,4 +1,6 @@
 @extends('layouts.app')
+@section('title','ملخص اليومية')
+
 @section('content')
 
     <head>
@@ -18,7 +20,7 @@
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد أوريدوا النهائي  </div>
         <div class="card-body">
-            @if(isset($OoredooEnd))
+            @if(isset($OoredooEnd) and $OoredooEnd)
                 <h5 class="card-title text-info">{{$OoredooEnd}} شيكل</h5>
             @else
                 <h5 class="card-title text-danger">⚠️</h5>
@@ -28,7 +30,7 @@
                  <span>الرصيد المشترى : {{ $TotalOoredooBalanceinDealer }} <br> </span>
                 <span> الرصيد المباع نقداً: {{ $TotalOoredooBalanceCashOut }}<br> </span>
              <span>  ديون أرصدة أوريدوا:    {{ $TotalOoredooBalanceLoans }} </span>
-               <span> @if(isset($TotalOoredooBalanceCashSale))
+               <span> @if(isset($TotalOoredooBalanceCashSale) and $TotalOoredooBalanceCashSale)
                     <br>  الرصيد النهائي المدخل:    {{ $closebalance->OoredooBalance }}
                     <br>  رصيد صندوق البيع الفوري :   {{ $TotalOoredooBalanceCashSale }}
                 @else
@@ -51,7 +53,7 @@
     <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
         <div class="card-header">رصيد جوال النهائي</div>
         <div class="card-body">
-            @if(isset($JawwalEnd))
+            @if(isset($JawwalEnd) and $JawwalEnd)
                 <h5 class="card-title text-info">{{$JawwalEnd}} شيكل</h5>
             @else
                 <h5 class="card-title text-danger">⚠️</h5>
@@ -61,7 +63,7 @@
                 الرصيد المشترى : {{ $TotalJawwalBalanceinDealer }} <br>
                 الرصيد المباع نقداً: {{ $TotalJawwalBalanceCashOut }}
                 <br>  ديون أرصدة جوال:    {{ $TotalJawwalBalanceLoans }}
-                <span> @if(isset($TotalJawwalBalanceCashSale))
+                <span> @if(isset($TotalJawwalBalanceCashSale) and $TotalJawwalBalanceCashSale)
                         <br>  الرصيد النهائي المدخل:    {{ $closebalance->JawwalBalance }}
                         <br>  رصيد صندوق البيع الفوري :   {{ $TotalJawwalBalanceCashSale }}
                     @else

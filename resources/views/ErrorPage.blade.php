@@ -1,4 +1,6 @@
 @extends('layouts.app')
+@section('title','خطأ خاص')
+
 @section('content')
 <head>
     <meta charset="UTF-8">

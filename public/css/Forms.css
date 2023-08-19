@@ -60,7 +60,13 @@ h1 {
     margin-right: 5px;
     vertical-align: middle;
 }
+.UserCheckBox{
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    vertical-align: middle;
 
+}
 
 label {
     display: block;

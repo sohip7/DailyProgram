@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','تعديل رصيد المنصات')
 @section('content')
 
 <head>
@@ -29,40 +30,40 @@
         </div>
 
         <div class="form-group">
-            <label for="OoredooBalance">رصيد أوريدوا:<span class="required-label"></span></label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBalance" name="OoredooBalance" required value="{{$PlatformBalances->OoredooBalance}}">
+            <label for="OoredooBalance">رصيد أوريدوا:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBalance" name="OoredooBalance"  value="{{$PlatformBalances->OoredooBalance}}">
         </div>
 
         <div class="form-group">
-            <label for="JawwalBalance">رصيد جوال:<span class="required-label"></span></label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="JawwalBalance" name="JawwalBalance" required value="{{$PlatformBalances->JawwalBalance}}">
+            <label for="JawwalBalance">رصيد جوال:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="JawwalBalance" name="JawwalBalance"  value="{{$PlatformBalances->JawwalBalance}}">
         </div>
 
         <div class="form-group">
-            <label for="JawwalPayBalance">رصيد جوال باي:<span class="required-label"></span></label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="JawwalPayBalance" name="JawwalPayBalance" required value="{{$PlatformBalances->JawwalPayBalance}}">
+            <label for="JawwalPayBalance">رصيد جوال باي:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="JawwalPayBalance" name="JawwalPayBalance"  value="{{$PlatformBalances->JawwalPayBalance}}">
         </div>
 
         <div class="form-group">
-            <label for="ElectricityBalance">رصيد الكهرباء:<span class="required-label"></span></label>
-            <input  placeholder="أدخل إجمالي رصيد الديكسين والعادي" type="number" id="ElectricityBalance" name="ElectricityBalance" required value="{{$PlatformBalances->ElectricityBalance}}">
+            <label for="ElectricityBalance">رصيد الكهرباء:</label>
+            <input  placeholder="أدخل إجمالي رصيد الديكسين والعادي" type="number" id="ElectricityBalance" name="ElectricityBalance"  value="{{$PlatformBalances->ElectricityBalance}}">
         </div>
 
         <div class="form-group">
-            <label for="OoredooBillsBalance">رصيد أوريدوا الفواتير:<span class="required-label"></span></label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBillsBalance" name="OoredooBillsBalance" required value="{{$PlatformBalances->OoredooBillsBalance}}">
-        </div>
-
-
-        <div class="form-group">
-            <label for="BankOfPalestineBalance">رصيد بنك فلسطين :<span class="required-label"></span></label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="BankOfPalestineBalance" name="BankOfPalestineBalance" required value="{{$PlatformBalances->BankOfPalestineBalance}}">
+            <label for="OoredooBillsBalance">رصيد أوريدوا الفواتير:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="OoredooBillsBalance" name="OoredooBillsBalance"  value="{{$PlatformBalances->OoredooBillsBalance}}">
         </div>
 
 
         <div class="form-group">
-            <label for="BankAlQudsBalance">رصيد بنك القدس:<span class="required-label"></span></label>
-            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="BankAlQudsBalance" name="BankAlQudsBalance" required value="{{$PlatformBalances->BankAlQudsBalance}}">
+            <label for="BankOfPalestineBalance">رصيد بنك فلسطين :</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="BankOfPalestineBalance" name="BankOfPalestineBalance"  value="{{$PlatformBalances->BankOfPalestineBalance}}">
+        </div>
+
+
+        <div class="form-group">
+            <label for="BankAlQudsBalance">رصيد بنك القدس:</label>
+            <input  placeholder="أدخل رصيد المحطة الحالي" type="number" id="BankAlQudsBalance" name="BankAlQudsBalance"  value="{{$PlatformBalances->BankAlQudsBalance}}">
         </div>
 
 
@@ -77,7 +78,7 @@
         <label for="UserConfirm">
             هل أنت {{$user_data->name}}
             <span class="required-label"></span>
-            <input  id="UserConfirm" type="checkbox" required>
+            <input class="UserCheckBox" id="UserConfirm" type="checkbox" required>
         </label>
 
         <button type="submit">حفظ</button>

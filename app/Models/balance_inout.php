@@ -14,8 +14,10 @@ class balance_inout extends Model
         'id',
         'record_type',
         'platform_name',
+        'jawwalpay_account_type',
         'outs_foreign_id',
         'sales_foreign_id',
+        'salescomssion_foreign_id',
         'cuspay_foreign_id',
         'purchases_foreign_id',
         'merchantpay_foreign_id',
@@ -24,10 +26,11 @@ class balance_inout extends Model
         'amount',
         'notes',
         'created_at',
+        'created_by',
         'updated_at',
         'updated_By',
-        'deleted_by',
         'deleted_at',
+        'deleted_by',
     ];
     public $timestamps=false;
 }

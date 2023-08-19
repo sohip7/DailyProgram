@@ -105,6 +105,7 @@ class DailyController extends Controller
                     'sales_foreign_id'=>$insertedID,
                     'amount'=> $request->amount * $request->quantity,
                     'notes'=>"نقداُ",
+                    'created_by'=>$user_data->name
                     ]);
 
             } elseif ($selectedValue === 'Jawwal') {
@@ -114,6 +115,7 @@ class DailyController extends Controller
                     'sales_foreign_id'=>$insertedID,
                     'amount'=> $request->amount * $request->quantity,
                     'notes'=>"نقداُ",
+                    'created_by'=>$user_data->name
                 ]);
             }
 
@@ -124,8 +126,19 @@ class DailyController extends Controller
                     'sales_foreign_id'=>$insertedID,
                     'amount'=> $request->amount * $request->quantity,
                     'notes'=>"نقداُ",
+                    'created_by'=>$user_data->name
                 ]);
-            }
+                if($request->JPAccountType=='agent'){
+                $store_balance_out=balance_inout::create([
+                    'record_type'=>'مدخل',
+                    'jawwalpay_account_type'=>'agent',
+                    'platform_name'=>$selectedValue, //JawwalPay
+                    'salescomssion_foreign_id'=>$insertedID,
+                    'amount'=> $request->amount * (0.5/100),
+                    'notes'=>"عمولة إيداع جوال باي عبر حساب الوكيل",
+                    'created_by'=>$user_data->name
+                ]);
+            }}
 
             elseif ($selectedValue === 'OoredooBills') {
                 $store_balance_out=balance_inout::create([
@@ -134,6 +147,7 @@ class DailyController extends Controller
                     'sales_foreign_id'=>$insertedID,
                     'amount'=> $request->amount * $request->quantity,
                     'notes'=>"نقداُ",
+                    'created_by'=>$user_data->name
                 ]);
             }
 
@@ -144,6 +158,7 @@ class DailyController extends Controller
                     'sales_foreign_id'=>$insertedID,
                     'amount'=> $request->amount * $request->quantity,
                     'notes'=>"نقداُ",
+                    'created_by'=>$user_data->name
                 ]);
             }
             elseif ($selectedValue === 'OoredooSim') {
@@ -161,8 +176,9 @@ class DailyController extends Controller
                     'record_type'=>'مخرج',
                     'platform_name'=>"Ooredoo",
                     'loans_foreign_id'=>$insertedID,
-                    'amount'=> $request->ActivePrice,
+                    'amount'=> $request->ActivePrice * $request->quantity,
                     'notes'=>"مديونية تفعيل شريحة",
+                    'created_by'=>$user_data->name
                 ]);
 
                 return redirect()->back()->with(['success'=> "تم حفظ بيع الشريحة بنجاح وتسجيل مديونية التفعيل وهي $request->ActivePrice"]) ;
@@ -176,29 +192,42 @@ class DailyController extends Controller
         $user_data = Auth::user();
         $Sales2 = dailydata::find($request -> id);
         $loans_ooredooSim=lenddata::where('sales_foreign_id',$request -> id)->first();
-        $balance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();
+        $OSbalance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();
+        $balance_inout=balance_inout::where('sales_foreign_id',$request -> id)->first();
+        $JPCbalance_inout=balance_inout::where('salescomssion_foreign_id',$request -> id)->first();
         if (!$Sales2){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
         }elseif($loans_ooredooSim) {
             $loans_ooredooSim->update([
                 'deleted_by' => $user_data->name
             ]);
-            $Sales2->update([
+            $OSbalance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $loans_ooredooSim->delete();
+            $OSbalance_inout->delete();
+            return redirect()->back()->with(['success' => 'تم حذف تسجيل الشريحة بنجاح ']);
+        }elseif($JPCbalance_inout and $balance_inout){
+            $JPCbalance_inout->update([
                 'deleted_by' => $user_data->name
             ]);
             $balance_inout->update([
                 'deleted_by' => $user_data->name
             ]);
-            $loans_ooredooSim->delete();
-            $Sales2->delete();
+            $JPCbalance_inout->delete();
             $balance_inout->delete();
-            return redirect()->back()->with(['success' => 'تم حذف تسجيل الشريحة بنجاح ']);
-        }else{
-            $Sales2->update([
+        }elseif($balance_inout){
+            $balance_inout->update([
                 'deleted_by' => $user_data->name
             ]);
-        $Sales2->delete();
+            $balance_inout->delete();
         }
+        $Sales2->update([
+            'deleted_by' => $user_data->name
+        ]);
+        $Sales2->delete();
+
+
         return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
 
     }
@@ -211,6 +240,7 @@ class DailyController extends Controller
         $user_data = Auth::user();
         $Sales = dailydata::find($request -> id);
         $loans_ooredooSim=lenddata::where('sales_foreign_id',$request -> id)->first();
+        $JPCbalance_inout=balance_inout::where('salescomssion_foreign_id',$request -> id)->first();//jawwal pay commission
         if (!$Sales)
             return redirect()->back()->with(['Error' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
         return view('Edit_Forms.SalesEdit', get_defined_vars());
@@ -221,7 +251,9 @@ class DailyController extends Controller
         $user_data = Auth::user();
         $sales = dailydata::find($request -> id);
         $loans_ooredooSim=lenddata::where('sales_foreign_id',$request -> id);
-        $balance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();
+        $OSbalance_inout=balance_inout::where('loans_foreign_id',$request -> id)->first();// ooredoo sim
+        $balance_inout=balance_inout::where('sales_foreign_id',$request -> id)->first();
+        $JPCbalance_inout=balance_inout::where('salescomssion_foreign_id',$request -> id)->first();//jawwal pay commission
         if (!$sales)
             return redirect()->back()->with(['success' => 'لم يتم إيجاد الصنف في قاعدة بياناتنا ']);
 
@@ -235,26 +267,56 @@ class DailyController extends Controller
 
             if (!$balance_inout)
                 return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:2']);
+            if($request->RecordType=='JawwalPay'){
+                $balance_inout->update([
+                    'amount' => $request->amount * $request->quantity,
+                    'platform_name' => $request->RecordType,
+                    'updated_By' => $user_data->name
+                ]);
+                if($request->JPAccountType=='agent'){
+                    if(!$JPCbalance_inout){
+                        return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:4']);
+
+                    }
+                    $JPCbalance_inout->update([
+                        'amount'=> $request->amount * (0.5/100),
+                        'updated_By' => $user_data->name
+
+                    ]);
+                }elseif($JPCbalance_inout){
+                    $JPCbalance_inout->update([
+                        'deleted_by' => $user_data->name
+                    ]);
+                    $JPCbalance_inout->delete();
+                }
+
+            }else
             $balance_inout->update([
-                'amount' => $request->amount,
+                'amount' => $request->amount * $request->quantity,
                 'platform_name' => $request->RecordType,
                 'updated_By' => $user_data->name
             ]);
         }
-        if($request->RecordType=='General' and $balance_inout ){
-            $balance_inout->update([
-                'deleted_by' => $user_data->name
-            ]);
-            $balance_inout->delete();
-            if($loans_ooredooSim){
+        if($request->RecordType=='General' ){
+            if($balance_inout)
+                $balance_inout->update([
+                    'deleted_by' => $user_data->name
+                ]);
+                $balance_inout->delete();
+
+            if($OSbalance_inout)
+                $OSbalance_inout->update([
+                    'deleted_by' => $user_data->name
+                ]);
                 $loans_ooredooSim->update([
                     'deleted_by' => $user_data->name
                 ]);
+                $OSbalance_inout->delete();
+
                 $loans_ooredooSim->delete();
-            }
         }
         elseif ($request->RecordType=='OoredooSim'){
-            if (!$balance_inout or !$loans_ooredooSim)
+            if (!$OSbalance_inout or !$loans_ooredooSim)
                 return redirect()->route('sales.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:3']);
             $loans_ooredooSim->update([
                 'amount'=> $request->ActivePrice,
@@ -262,8 +324,8 @@ class DailyController extends Controller
                 'total'=> $request->ActivePrice * $request->quantity,
                 'updated_By'=> $user_data->name,
             ]);
-            $balance_inout->update([
-                'amount'=> $request->ActivePrice,
+            $OSbalance_inout->update([
+                'amount'=> $request->ActivePrice*$request->quantity,
                 'updated_By'=> $user_data->name,
             ]);
         }
@@ -699,6 +761,9 @@ class DailyController extends Controller
         if (!$PlatformBalances){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
         }else {
+            $PlatformBalances->update([
+                'deleted_by' => $user_data->name
+            ]);
             $PlatformBalances->delete();
 
             return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
@@ -857,6 +922,7 @@ class DailyController extends Controller
                     'purchases_foreign_id'=>$insertedId,
                     'amount'=> $request->amount,
                     'notes'=>"شحن المنصة من تاجر",
+                    'created_by'=>$user_data->name
                 ]);
 
             } elseif ($selectedValue === 'Jawwal') {
@@ -866,6 +932,7 @@ class DailyController extends Controller
                     'purchases_foreign_id'=>$insertedId,
                     'amount'=> $request->amount,
                     'notes'=>"شحن المنصة من تاجر",
+                    'created_by'=>$user_data->name
                 ]);
             }
 
@@ -876,6 +943,7 @@ class DailyController extends Controller
                     'purchases_foreign_id'=>$insertedId,
                     'amount'=> $request->amount,
                     'notes'=>"شحن المنصة من تاجر",
+                    'created_by'=>$user_data->name
                 ]);
             }
 
@@ -886,6 +954,7 @@ class DailyController extends Controller
                     'purchases_foreign_id'=>$insertedId,
                     'amount'=> $request->amount,
                     'notes'=>"شحن المنصة من تاجر",
+                    'created_by'=>$user_data->name
                 ]);
             }
 
@@ -896,6 +965,7 @@ class DailyController extends Controller
                     'purchases_foreign_id'=>$insertedId,
                     'amount'=> $request->amount,
                     'notes'=>"شحن المنصة من تاجر",
+                    'created_by'=>$user_data->name
                 ]);
             }
 
@@ -932,6 +1002,7 @@ class DailyController extends Controller
                     'outs_foreign_id'=>$insertedID,
                     'amount'=> $request->amount,
                     'notes'=>"تم إضافة هذا المبلغ  إلى رصيد المتصة بناءاً على  تسجيل عملية إخراج لهذه المنصة ",
+                    'created_by'=>$user_data->name
                 ]);
 
 
@@ -953,6 +1024,7 @@ class DailyController extends Controller
                     'outs_foreign_id'=>$insertedID,
                     'amount'=> $request->amount,
                     'notes'=>"تم إضافة هذا المبلغ  إلى رصيد المتصة بناءاً على  تسجيل عملية إخراج لهذه المنصة ",
+                    'created_by'=>$user_data->name
                 ]);
 
 
@@ -975,6 +1047,7 @@ class DailyController extends Controller
                     'outs_foreign_id'=>$insertedID,
                     'amount'=> $request->amount,
                     'notes'=>"تم إضافة هذا المبلغ  إلى رصيد المتصة بناءاً على  تسجيل عملية إخراج لهذه المنصة ",
+                    'created_by'=>$user_data->name
                 ]);
 
 
@@ -1020,6 +1093,7 @@ class DailyController extends Controller
                 'loans_foreign_id' => $insertedID,
                 'amount' => $request->amount * $request->quantity,
                 'notes' => "دَين على $request->debtor_name",
+                'created_by'=>$user_data->name
             ]);
 
         } elseif ($selectedValue === 'Jawwal') {
@@ -1029,6 +1103,7 @@ class DailyController extends Controller
                 'loans_foreign_id' => $insertedID,
                 'amount' => $request->amount * $request->quantity,
                 'notes' => "دَين على $request->debtor_name",
+                'created_by'=>$user_data->name
             ]);
         } elseif ($selectedValue === 'JawwalPay') {
             $store_balance_out = balance_inout::create([
@@ -1037,6 +1112,7 @@ class DailyController extends Controller
                 'loans_foreign_id' => $insertedID,
                 'amount' => $request->amount * $request->quantity,
                 'notes' => "دَين على $request->debtor_name",
+                'created_by'=>$user_data->name
             ]);
         } elseif ($selectedValue === 'OoredooBills') {
             $store_balance_out = balance_inout::create([
@@ -1045,6 +1121,7 @@ class DailyController extends Controller
                 'loans_foreign_id' => $insertedID,
                 'amount' => $request->amount * $request->quantity,
                 'notes' => "دَين على $request->debtor_name",
+                'created_by'=>$user_data->name
             ]);
         } elseif ($selectedValue === 'Electricity') {
             $store_balance_out = balance_inout::create([
@@ -1053,6 +1130,7 @@ class DailyController extends Controller
                 'loans_foreign_id' => $insertedID,
                 'amount' => $request->amount * $request->quantity,
                 'notes' => "دَين على $request->debtor_name",
+                'created_by'=>$user_data->name
             ]);
         } elseif ($selectedValue === 'installment_transaction') {
             $store_in_sales = dailydata::create([
@@ -1095,6 +1173,7 @@ class DailyController extends Controller
                     'cuspay_foreign_id'=>$insertedID,
                     'amount'=> $request->amount,
                     'notes'=>"دفعة من :$request->CustomerName ",
+                    'created_by'=>$user_data->name
                 ]);
                 $sales = Outs::create([
                     'item'=> "إخراج إلى رصيد $request->PayMethod ",
@@ -1115,6 +1194,7 @@ class DailyController extends Controller
                     'cuspay_foreign_id'=>$insertedID,
                     'amount'=> $request->amount,
                     'notes'=>"دفعة من :$request->CustomerName ",
+                    'created_by'=>$user_data->name
                 ]);
                 $sales = Outs::create([
                     'item'=> "إخراج إلى رصيد $request->PayMethod ",
@@ -1134,6 +1214,7 @@ class DailyController extends Controller
                     'cuspay_foreign_id'=>$insertedID,
                     'amount'=> $request->amount,
                     'notes'=>"دفعة من :$request->CustomerName ",
+                    'created_by'=>$user_data->name
                 ]);
                 $sales = Outs::create([
                     'item'=> "إخراج إلى رصيد $request->PayMethod ",
@@ -1155,7 +1236,12 @@ class DailyController extends Controller
 
     public function StorePlatformBalance(Request $request){
         $user_data = Auth::user();
-
+        $OpenPlatformBalances = PlatformBalance::whereDate('created_at',today())->where('BalanceType','افتتاحي')->first();
+        $ClosePlatformBalances = PlatformBalance::whereDate('created_at',today())->where('BalanceType','نهائي')->first();
+        if($request->BalanceType=='افتتاحي' and $OpenPlatformBalances )
+            return redirect()->back()->with(['Error'=> 'سبق لك وأن أدخلت الأرصدة الافتتاحية لا يجوز الادخال مرتين لنفس اليوم، برجاء التعديل او حذف القديم وإعادة الإضافة']);
+        if($request->BalanceType=='نهائي' and $ClosePlatformBalances )
+            return redirect()->back()->with(['Error'=> ' سبق لك وأن أدخلت الأرصدة النهائية لا يجوز الادخال مرتين لنفس اليوم، برجاء التعديل او حذف الفديم وإعادة الاضافة']);
         $sales = PlatformBalance::create([
             'OoredooBalance'=> $request->OoredooBalance,
             'JawwalBalance'=> $request->JawwalBalance,
@@ -1198,6 +1284,7 @@ class DailyController extends Controller
                 'merchantpay_foreign_id'=>$insertedId,
                 'amount'=> $request->amount,
                 'notes'=>"دفعة إلى  :$request->merchant_name ",
+                'created_by'=>$user_data->name
             ]);
 
 
@@ -1221,6 +1308,7 @@ class DailyController extends Controller
                 'merchantpay_foreign_id'=>$insertedId,
                 'amount'=> $request->amount,
                 'notes'=>"دفعة إلى  :$request->merchant_name ",
+                'created_by'=>$user_data->name
             ]);
         }
 
@@ -1242,6 +1330,7 @@ class DailyController extends Controller
                 'merchantpay_foreign_id'=>$insertedId,
                 'amount'=> $request->amount,
                 'notes'=>"دفعة إلى  :$request->merchant_name ",
+                'created_by'=>$user_data->name
             ]);
         }
 
@@ -1446,30 +1535,17 @@ class DailyController extends Controller
 
         $todayOpenBal=PlatformBalance::whereDate('created_at',today() )->where('BalanceType','افتتاحي')->first();
         $todayCloseBal=PlatformBalance::whereDate('created_at',today() )->where('BalanceType','نهائي')->first();
-        $Msg="مدخلش الشرط";
-        $SUrl="";
-        $OoredooBalanceEnd="";
-        if($todayOpenBal==null){
-            $Msg= "انت لم تدخل الرصيد الافتتاحي لمحطات الشحن لهذا اليوم" ;
-            $SUrl='PlatformBalanceForm';
-            return view('ErrorPage',compact('Msg','SUrl')) ;
-        } elseif ($todayCloseBal==null){
-            $Msg=  "انت لم تدخل الرصيد النهائي لمحطات الشحن لهذا اليوم";
-            $SUrl='PlatformBalanceForm';
-             return view('ErrorPage',compact('Msg','SUrl')) ;
-
-        }else {
-
-           $OoredooBalanceEnd=$todayCloseBal->OoredooBalance-$todayOpenBal->OoredooBalance;
-          $JawwalBalanceEnd=$todayCloseBal->JawwalBalance-$todayOpenBal->JawwalBalance;
-           $JawwalPayBalanceEnd=$todayCloseBal->JawwalPayBalance-$todayOpenBal->JawwalPayBalance;
-           $ElectricityBalanceEnd=$todayCloseBal->ElectricityBalance-$todayOpenBal->ElectricityBalance;
-           $OoredooBillsBalanceEnd=$todayCloseBal->OoredooBillsBalance-$todayOpenBal->OoredooBillsBalance;
-           $BankOfPalestineBalanceEnd=$todayCloseBal->BankOfPalestineBalance-$todayOpenBal->BankOfPalestineBalance;
-           $BankAlQudsBalanceEnd=$todayCloseBal->BankAlQudsBalance-$todayOpenBal->BankAlQudsBalance;
-
-
+        if($todayOpenBal and $todayCloseBal ) {
+            $OoredooBalanceEnd = $todayCloseBal->OoredooBalance - $todayOpenBal->OoredooBalance;
+            $JawwalBalanceEnd = $todayCloseBal->JawwalBalance - $todayOpenBal->JawwalBalance;
+            $JawwalPayBalanceEnd = $todayCloseBal->JawwalPayBalance - $todayOpenBal->JawwalPayBalance;
+            $ElectricityBalanceEnd = $todayCloseBal->ElectricityBalance - $todayOpenBal->ElectricityBalance;
+            $OoredooBillsBalanceEnd = $todayCloseBal->OoredooBillsBalance - $todayOpenBal->OoredooBillsBalance;
+            $BankOfPalestineBalanceEnd = $todayCloseBal->BankOfPalestineBalance - $todayOpenBal->BankOfPalestineBalance;
+            $BankAlQudsBalanceEnd = $todayCloseBal->BankAlQudsBalance - $todayOpenBal->BankAlQudsBalance;
         }
+
+
 
         return view('Show\PlatformBalanceShow', get_defined_vars());
     }
@@ -1539,11 +1615,11 @@ class DailyController extends Controller
         $balancsales_in=$balancsales->where('record_type','مدخل');
         $balancsales_out=$balancsales->where('record_type','مخرج');
 
-        $totalOoredooLoan=lenddata::whereDate('created_at',today())->where('RecordType','Ooredoo')->sum('amount');
-        $totalJawwalLoan=lenddata::whereDate('created_at',today())->where('RecordType','Jawwal')->sum('amount');
-        $totalOoredooBillsLoan=lenddata::whereDate('created_at',today())->where('RecordType','OoredooBills')->sum('amount');
-        $totalJawwalPayLoan=lenddata::whereDate('created_at',today())->where('RecordType','JawwalPay')->sum('amount');
-        $totalElectricityLoan=lenddata::whereDate('created_at',today())->where('RecordType','Electricity')->sum('amount');
+        $totalOoredooLoan=lenddata::whereDate('created_at',today())->where('RecordType','Ooredoo')->sum('total');
+        $totalJawwalLoan=lenddata::whereDate('created_at',today())->where('RecordType','Jawwal')->sum('total');
+        $totalOoredooBillsLoan=lenddata::whereDate('created_at',today())->where('RecordType','OoredooBills')->sum('total');
+        $totalJawwalPayLoan=lenddata::whereDate('created_at',today())->where('RecordType','JawwalPay')->sum('total');
+        $totalElectricityLoan=lenddata::whereDate('created_at',today())->where('RecordType','Electricity')->sum('total');
 
         ################## Platform Dealer Buy #########################
 
@@ -1569,8 +1645,9 @@ class DailyController extends Controller
        $TotalOoredooBillsBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','OoredooBills')->whereNotNull('loans_foreign_id')->sum('amount');
        $TotalElectricityBalanceLoans=$balancsales->where('record_type','مخرج')->where('platform_name','Electricity')->whereNotNull('loans_foreign_id')->sum('amount');
 
-       $totalOoredooSimActiveCashIn=dailydata::whereDate('created_at',today())->where('RecordType','OoredooSim')->sum('amount');
-       $SIMactivationFees=lenddata::whereDate('created_at',today())->where('RecordType','OoredooSim')->sum('amount');
+        # Ooredoo Sim Detail
+       $totalOoredooSimActiveCashIn=dailydata::whereDate('created_at',today())->where('RecordType','OoredooSim')->sum('total');
+       $SIMactivationFees=lenddata::whereDate('created_at',today())->where('RecordType','OoredooSim')->sum('total');
 
         #Total Balance in to all platform
         $OoredooTotalIn= $balancsales_in->where('platform_name','Ooredoo')->sum('amount');
@@ -1590,17 +1667,24 @@ class DailyController extends Controller
         $BopTotalOut= $balancsales_out->where('platform_name','bankOfPalestine')->sum('amount');
         $BankQudsTotalOut= $balancsales_out->where('platform_name','bankquds')->sum('amount');
 
+
+        #jawwalpay with merchant transaction
         $JawwalPayMerchantPay=$balancsales->where('record_type','مخرج')->where('platform_name','JawwalPay')->whereNotNull('merchantpay_foreign_id')->sum('amount');
         $JawwalPayCustPay=$balancsales->where('record_type','مدخل')->where('platform_name','JawwalPay')->whereNotNull('cuspay_foreign_id')->sum('amount');
 
         #special
         if($closebalance and $openbalance ) {
+             if($closebalance->OoredooBalance !=null)
+                $TotalOoredooBalanceCashSale =$openbalance->OoredooBalance+$TotalOoredooBalanceinDealer-$closebalance->OoredooBalance-$TotalOoredooBalanceLoans-$TotalOoredooBalanceCashOut;
+             if($closebalance->JawwalBalance !=null)
+                $TotalJawwalBalanceCashSale =$openbalance->JawwalBalance+$TotalJawwalBalanceinDealer-$closebalance->JawwalBalance-$TotalJawwalBalanceLoans-$TotalJawwalBalanceCashOut;
+             if($closebalance->JawwalPayBalance !=null)
+                 $TotalJawwalPayBalanceCashSale =$openbalance->JawwalPayBalance+$TotalJawwalPayBalanceinDealer-$closebalance->JawwalPayBalance-$TotalJawwalPayBalanceLoans-$TotalJawwalPayBalanceCashOut-$JawwalPayMerchantPay+$JawwalPayCustPay;
+             if($closebalance->OoredooBillsBalance !=null)
+                 $TotalOoredooBillsBalanceCashSale =$openbalance->OoredooBillsBalance+$TotalOoredooBillsBalanceinDealer-$closebalance->OoredooBillsBalance-$TotalOoredooBillsBalanceLoans-$TotalOoredooBillsBalanceCashOut;
+             if($closebalance->ElectricityBalance !=null)
+                 $TotalElectricityBalanceCashSale =$openbalance->ElectricityBalance+$TotalElectricityBalanceinDealer-$closebalance->ElectricityBalance-$TotalElectricityBalanceLoans-$TotalElectricityBalanceCashOut;
 
-            $TotalOoredooBalanceCashSale =$openbalance->OoredooBalance+$TotalOoredooBalanceinDealer-$closebalance->OoredooBalance-$TotalOoredooBalanceLoans-$TotalOoredooBalanceCashOut;
-            $TotalJawwalBalanceCashSale =$openbalance->JawwalBalance+$TotalJawwalBalanceinDealer-$closebalance->JawwalBalance-$TotalJawwalBalanceLoans-$TotalJawwalBalanceCashOut;
-            $TotalJawwalPayBalanceCashSale =$openbalance->JawwalPayBalance+$TotalJawwalPayBalanceinDealer-$closebalance->JawwalPayBalance-$TotalJawwalPayBalanceLoans-$TotalJawwalPayBalanceCashOut-$JawwalPayMerchantPay+$JawwalPayCustPay;
-            $TotalOoredooBillsBalanceCashSale =$openbalance->OoredooBillsBalance+$TotalOoredooBillsBalanceinDealer-$closebalance->OoredooBillsBalance-$TotalOoredooBillsBalanceLoans-$TotalOoredooBillsBalanceCashOut;
-            $TotalElectricityBalanceCashSale =$openbalance->ElectricityBalance+$TotalElectricityBalanceinDealer-$closebalance->ElectricityBalance-$TotalElectricityBalanceLoans-$TotalElectricityBalanceCashOut;
 
             $OoredooEnd= $openbalance->OoredooBalance+$OoredooTotalIn-$OoredooTotalOut;
             $JawwalEnd= $openbalance->JawwalBalance+$JawwalTotalIn-$JawwalTotalOut;

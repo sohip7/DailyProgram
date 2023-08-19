@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','إضافة ملاحظة يومية')
 @section('content')
 
 <head>
@@ -23,7 +24,7 @@
         <label for="UserConfirm">
             هل أنت {{$user_data->name}}
             <span class="required-label"></span>
-            <input  id="UserConfirm" type="checkbox" required>
+            <input class="UserCheckBox" id="UserConfirm" type="checkbox" required>
         </label>
 
         <button type="submit">إضافة</button>

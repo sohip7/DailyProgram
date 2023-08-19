@@ -1,4 +1,5 @@
 @extends('layouts.app')
+    @section('title',' ملاحظات اليومية')
     @section('content')
 <!DOCTYPE html>
 <html lang="ar">

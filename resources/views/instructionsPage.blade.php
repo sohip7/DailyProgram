@@ -1,4 +1,6 @@
 @extends('layouts.app')
+@section('title','تعليمات حساب ملخص اليومية')
+
     @section('content')
         <head>
             <meta charset="UTF-8">

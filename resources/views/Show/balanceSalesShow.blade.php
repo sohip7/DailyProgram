@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title','عرض مبيعات الأرصدة')
 @section('content')
 
 <head>
@@ -62,6 +62,7 @@
             <th>المبلغ</th>
             <th>الملاحظات</th>
             <th>وقت التسجيل</th>
+            <th>سجلت بواسطة:</th>
             <th>اخر تحديث </th>
             <th>تم التحديث بواسطة: </th>
         </tr>
@@ -76,6 +77,7 @@
                 <td>{{$balancesale -> amount}}</td>
                 <td>{{$balancesale -> notes}}</td>
                 <td>{{$balancesale -> created_at}}</td>
+                <td>{{$balancesale -> created_by}}</td>
                 @if(!$balancesale -> updated_at)
                     <td class="text-secondary fw-bold">غير معدلة</td>
                 @else

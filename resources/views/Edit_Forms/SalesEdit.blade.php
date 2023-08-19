@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','تعديل مبيعات يومية')
 @section('content')
 
 <head>
@@ -37,6 +38,19 @@
                 <!-- يمكنك إضافة المزيد من الخيارات هنا -->
             </select>
         </div>
+            @if($Sales->RecordType === 'JawwalPay')
+            <div  id class="custom-select">
+                <!-- JPATS=> jawwal pay account type-->
+                <div  id="JPATS" class="custom-select">
+                    نوع الحساب الذي تم الايداع منه:
+                    <select id="JPAccountType" name="JPAccountType"  >
+                        <option  value="merchant"  >حساب التاجر </option>
+                        <option @if($JPCbalance_inout) @if($JPCbalance_inout->jawwalpay_account_type == 'agent') selected @endif @endif value="agent" >حساب الوكيل </option>
+                        <!-- يمكنك إضافة المزيد من الخيارات هنا -->
+                    </select>
+                </div>
+            </div>
+            @endif
 
 
         <div class="form-group">
@@ -68,7 +82,7 @@
         </div>
         <label class="label" for="UserConfirm">
             هل أنت {{$user_data->name}}
-            <input  id="UserConfirm" type="checkbox" required>
+            <input  class="UserCheckBox" id="UserConfirm" type="checkbox" required>
         </label>
 
         <button type="submit">حفظ</button>

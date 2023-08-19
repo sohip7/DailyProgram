@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title','عرض المشتريات')
 @section('content')
     <!DOCTYPE html>
 <html>

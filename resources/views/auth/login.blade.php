@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','تسجيل الدخول')
 
 @section('content')
 <div dir="rtl" class="container">

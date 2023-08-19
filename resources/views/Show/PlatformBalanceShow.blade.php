@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('title','عرض أرصدة المنصات')
 @section('content')
 
 <head>
@@ -72,6 +72,9 @@
             <th>ملاحظات</th>
             <th>وقت التسجيل</th>
             <th>بواسطة المستخدم</th>
+            <th>وقت التعديل</th>
+            <th>عُدلت بواسطة المستخدم</th>
+
             <th>الاجراءات</th>
         </tr>
         </thead>
@@ -91,6 +94,16 @@
                 <td>{{$PtsBal -> notes}}</td>
                 <td>{{$PtsBal -> created_at}}</td>
                 <td>{{$PtsBal -> userName}}</td>
+                @if(!$PtsBal -> updated_at)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td>{{$PtsBal -> updated_at}}</td>
+                @endif
+                @if(!$PtsBal -> updated_By)
+                    <td class="text-secondary fw-bold">غير معدلة</td>
+                @else
+                    <td class="text-danger fw-bold"> {{$PtsBal -> updated_By}} </td>
+                @endif
 
 
 
@@ -119,38 +132,51 @@
         </tbody>
     </table>
     <div class="container1">
+        @if(isset($OoredooBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
-            فارق رصيد أوريدوا <span  style="font-size: 25px" class="badge badge-light">{{ $OoredooBalanceEnd }}</span>
+            فارق رصيد أوريدوا <span  style="font-size: 25px" class="badge badge-light">{{ $OoredooBalanceEnd  }}</span>
         </button>
-
+        @endif
+        @if(isset($JawwalBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
             فارق رصيد جوال <span  style="font-size: 25px" class="badge badge-light">{{ $JawwalBalanceEnd }}</span>
         </button>
-
+            @endif
+            @if(isset($JawwalPayBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
             فارق رصيد جوال باي <span  style="font-size: 25px" class="badge badge-light">{{ $JawwalPayBalanceEnd }}</span>
         </button>
-
+            @endif
+            @if(isset($ElectricityBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
             فارق رصيد الكهرباء <span  style="font-size: 25px" class="badge badge-light">{{ $ElectricityBalanceEnd }}</span>
         </button>
-
+            @endif
+            @if(isset($OoredooBillsBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
             فارق رصيد فواتير اوريدوا <span  style="font-size: 25px" class="badge badge-light">{{ $OoredooBillsBalanceEnd }}</span>
         </button>
-
+            @endif
+            @if(isset($BankOfPalestineBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
             فارق رصيد بنك فلسطين <span  style="font-size: 25px" class="badge badge-light">{{ $BankOfPalestineBalanceEnd }}</span>
         </button>
-
+            @endif
+            @if(isset($BankAlQudsBalanceEnd))
         <button  type="button" class="bf btn btn-primary">
             فارق رصيد بنك القدس <span  style="font-size: 25px" class="badge badge-light">{{ $BankAlQudsBalanceEnd }}</span>
         </button>
+            @endif
+
 
 
 
     </div>
+    <div  class="text-box">
+        <a href="{{ route('PlatformBalanceForm') }}" class="btn btn-primary">إضافة جديد</a>
+    </div>
 </div>
+
 
 </body>
 

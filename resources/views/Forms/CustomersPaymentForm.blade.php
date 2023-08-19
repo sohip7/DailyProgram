@@ -1,11 +1,11 @@
 @extends('layouts.app')
+@section('title','إصافة دفعة من زيون')
 @section('content')
 
 <head>
     <title>إضافة دفعة من زبون</title>
     <link rel="stylesheet" href="{{ asset('css/Forms.css') }}">
 </head>
-<body>
 <div class="container">
     @if(Session::has('success'))
         <div class="alert alert-success" role="alert">
@@ -40,16 +40,15 @@
             <label for="notes">ملاحظات:</label>
             <textarea  placeholder="اكتب ملاحظات إذا كان مثلا هناك طلب لتعديل موعد الدفعات الشهرية " id="notes" name="notes"></textarea>
         </div>
-        <label for="UserConfirm">
-            هل أنت {{$user_data->name}}
-            <span class="required-label"></span>
-            <input  id="UserConfirm" type="checkbox" required>
-        </label>
+            <label  for="UserConfirm">
+                هل أنت {{$user_data->name}}
+                <span class="required-label"></span>
+                <input  class="UserCheckBox" id="UserConfirm" type="checkbox" required>
+            </label>
 
         <button type="submit">إضافة</button>
     </form>
 </div>
-</body>
 
 
 @endsection

@@ -4,9 +4,7 @@
 @section('content')
 
     <div  class="greeting">
-        <div dir="ltr" style="display: inline" class="text-success">
-            {{  explode(' ', $user_data->name)[0] }}
-        </div>
+
         <script>
             const currentHour = new Date().getHours();
 
@@ -16,14 +14,59 @@
                 document.write("مساء الخير ");
             }
         </script>
+        <div  style="display: inline" class="text-success">
+            {{  explode(' ', $user_data->name)[0] }}
+        </div>
 
     </div>
-
+>
 
         <link rel="stylesheet" type="text/css" href="{{asset('css/Home.css')}}">
 
 
-    <div class="container">
+
+            <!-- النموذج العائم -->
+
+            <div class="floating-form-container" id="floating-form">
+                <h2> إدخال بيانات ترحيل اليومية</h2>
+<div class="alert alert-danger">
+    غير فعالة!
+</div>                <form>
+                    <div>
+                        <label for="amount_usd"> المبلغ "دولار":</label>
+                        <input type="number" id="amount_usd" name="amount_usd">
+                    </div>
+                    <div>
+                        <div>
+                        <label for="amount_jod"> المبلغ "دينار":</label>
+                        <input type="number" id="amount_jod" name="amount_jod">
+                    </div>
+                    <div>
+                        <label for="amount_ils"> المبلغ "شيكل":</label>
+                        <input type="number" id="amount_ils" name="amount_ils">
+                    </div>
+                        <div>
+                        <label for="amount_daily"> المبلغ المرحل إلى اليومية الجديدة:</label>
+                        <input type="number" id="amount_daily" name="amount_daily">
+                    </div>
+
+                    <button type="submit">إرسال</button>
+
+                </div>
+
+            </form>
+                <button onclick="hideForm()">إخفاء النموذج</button>
+            </div>
+
+
+
+
+
+
+
+
+        <div class="container">
+
         @if(Session::has('v'))
             <div class="alert alert-success" role="alert">
                 {{ Session::get('v') }}
@@ -31,6 +74,7 @@
         @endif
         <h1>قائمة العمليات</h1>
         <div style=" align-content: center" class="button-list">
+            <button id="show-form-button"  class="btn" onclick="showForm()">إدخال مبالغ ترحيل اليومية</button>
             <a href="{{route('SalesForm')}}" class="btn">إدخال المبيعات اليومية </a>
             <a href="{{route('OutsForm')}}" class="btn">إدخال مًخرج جديد</a>
             <a href="{{route('CustomersPaymentForm')}}" class="btn">إدخال دفعة من زبون </a>
@@ -45,5 +89,19 @@
         </div>
     </div>
 
-</div>
+    <script>
+        function showForm() {
+            document.getElementById('floating-form').style.display = 'block';
+        }
+
+        function hideForm() {
+            document.getElementById('floating-form').style.display = 'none';
+        }
+
+    </script>
+
+
+
+
+
 @endsection

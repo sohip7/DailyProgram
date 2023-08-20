@@ -1,7 +1,28 @@
 @extends('layouts.app')
 @section('title','تعديل مُخرج')
 @section('content')
+    <script>
+        function vh(value){
+            const item_name=document.getElementById('item_name');
+            const requiredStar=document.getElementById('requiredStar');
+            if(value=== "bankOfPalestine"){
+                item_name.value = "بنك فلسطين";
+                requiredStar.style.display='inline';
+            }else if(value=== "bankquds"){
+                item_name.value = "بنك القدس";
+                requiredStar.style.display='inline';
 
+            }  else if(value=== "JawwalPay"){
+                item_name.value = "جوال باي";
+                requiredStar.style.display='inline';
+            }
+            else if(value=== "Cash"){
+                requiredStar.style.display='none';
+            }
+
+
+        }
+    </script>
 <head>
     <title> تعديل مُخرج</title>
     <link rel="stylesheet" href="{{ asset('css/Forms.css') }}">
@@ -21,7 +42,7 @@
 
         <div class="custom-select">
             نوع العملية:
-            <select id="RecordType" name="RecordType" >
+            <select id="RecordType" name="RecordType" onchange="vh(this.value)" >
 
                 <option @if($Outs->RecordType === 'Cash') selected @endif value="Cash" >مخرجات عامة نقداً </option>
                 <option @if($Outs->RecordType === 'bankOfPalestine') selected @endif value="bankOfPalestine" >بنك فلسطين </option>

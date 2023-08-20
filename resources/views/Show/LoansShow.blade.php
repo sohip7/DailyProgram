@@ -38,7 +38,7 @@
             <input type="text" id="date" name="date" value="{{$date}}" placeholder="من" readonly>
 
             <div class="date-label">
-                <label for="date-from"> :حدد اليوم </label>
+                <label for="date-from"> حدد اليوم: </label>
             </div>
 
 

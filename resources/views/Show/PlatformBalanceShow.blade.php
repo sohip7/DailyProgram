@@ -10,7 +10,17 @@
 </head>
 <body>
 <div class="container">
+    @if(Session::has('success'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('success') }}
+        </div>
+    @endif
 
+    @if(Session::has('Error'))
+        <div class="alert alert-danger" role="alert">
+            {{ Session::get('Error') }}
+        </div>
+    @endif
     <!-- رابط مكتبة jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -27,7 +37,7 @@
             <input type="text" id="date" name="date" value="{{$date}}" placeholder="من" readonly>
 
             <div class="date-label">
-                <label for="date-from"> :حدد اليوم </label>
+                <label for="date-from"> حدد اليوم: </label>
             </div>
 
 

@@ -2,6 +2,7 @@
 @section('title','تعديل مبيعات يومية')
 @section('content')
 
+
 <head>
     <title>تعديل بيان مبيعات</title>
     <link rel="stylesheet" href="{{ asset('css/Forms.css') }}">
@@ -26,7 +27,7 @@
 
         <div class="custom-select">
             نوع العملية:
-            <select id="RecordType" name="RecordType"  >
+            <select id="RecordType" name="RecordType" onchange="vh(this.value)" >
 
                 <option @if($Sales->RecordType === 'General') selected @endif value="General" >مبيعات عامة </option>
                 <option @if($Sales->RecordType === 'OoredooSim') selected @endif value="OoredooSim" >شريحة أوريدوا </option>
@@ -67,12 +68,17 @@
             <label for="quantity">الكمية:</label>
             <input type="number" id="quantity" name="quantity" value="{{$Sales->quantity}}" >
         </div>
-        @if($loans_ooredooSim)
-        <div @if($loans_ooredooSim) style="display: block"  @endif id="actP" class="form-group" style="display: none" >
+
+            <!-- OSSW => Ooredoo sim Store Warning-->
+            <div  style="display: none" id="OSSW" class="alert alert-info" role="alert">
+                يرجى وضع رسوم التفعيل 0 إذا تم شحن الشريحة الجديدة في يوم غير هذا اليوم
+            </div>
+
+
+        <div @if(isset($loans_ooredooSim ) and $loans_ooredooSim!=null) style="display: block"  @endif id="actP" class="form-group" style="display: none" >
             <label for="ActivePrice">رسوم التفعيل:</label>
-            <input type="number" id="ActivePrice" name="ActivePrice"  value="{{$loans_ooredooSim->amount}}" >
+            <input type="number" id="ActivePrice" name="ActivePrice" @if(isset($loans_ooredooSim ) and $loans_ooredooSim!=null)  @endif value="0" >
         </div>
-        @endif
 
 
 
@@ -90,7 +96,29 @@
 
 
 </div>
+<script>
+    function vh(value){
+        const item_name=document.getElementById('item_name');
+        if(value=== "Ooredoo"){
+            item_name.value = "رصيد أوريدوا";
+        }else if(value=== "Jawwal"){
+            item_name.value = "رصيد جوال";
+        } else if(value=== "OoredooBills"){
+            item_name.value = "فواتير أوريدوا";
+        } else if(value=== "JawwalPay"){
+            item_name.value = "جوال باي";
+        } else if(value=== "Electricity"){
+            item_name.value = "رصيد كهرباء";
+        } else if(value=== "OoredooSim"){
+            item_name.value = "شريحة أوريدوا";
+            document.getElementById('OSSW').style.display= "block";
+            document.getElementById('actP').style.display= "block";
 
+        }
+
+
+    }
+</script>
 
 
 @endsection

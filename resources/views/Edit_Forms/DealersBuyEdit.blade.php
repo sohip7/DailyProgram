@@ -1,7 +1,24 @@
 @extends('layouts.app')
 @section('title','تعديل مشتريات')
 @section('content')
+    <script>
+        function vh(value){
+            const item_name=document.getElementById('item_name');
+            if(value=== "Ooredoo"){
+                item_name.value = "رصيد أوريدوا";
+            }else if(value=== "Jawwal"){
+                item_name.value = "رصيد جوال";
+            } else if(value=== "OoredooBills"){
+                item_name.value = "فواتير أوريدوا";
+            } else if(value=== "JawwalPay"){
+                item_name.value = "جوال باي";
+            } else if(value=== "Electricity"){
+                item_name.value = "رصيد كهرباء";
+            }
 
+
+        }
+    </script>
 <head>
     <title> تعديل مشتريات</title>
 
@@ -23,7 +40,7 @@
 
         <div class="custom-select">
             نوع العملية:
-            <select id="RecordType" name="RecordType">
+            <select id="RecordType" name="RecordType" onchange="vh(this.value)">
                 <option @if($Purchases->RecordType === 'General') selected @endif value="General">مشتريات عامة </option>
                 <option @if($Purchases->RecordType === 'Ooredoo') selected @endif value="Ooredoo">رصيد أوريدوا </option>
                 <option @if($Purchases->RecordType === 'Jawwal') selected @endif value="Jawwal">رصيد جوال </option>

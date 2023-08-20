@@ -8,6 +8,7 @@
 </head>
 
 <div class="container">
+
     @if(Session::has('success'))
         <div class="alert alert-success" role="alert">
             {{ Session::get('success') }}
@@ -25,7 +26,9 @@
 
         <form class="form-group" action="{{route('sales.store')}}"  method="post">
         @csrf
-
+            <div   id="Instruction1" class="alert alert-info" role="alert">
+                هام جداً جداً،إذا كنت تنوي تسجيل رصيد مباع في يوم غير هذا اليوم، فقم بتسجيله مع مراعاة تحديد نوع العملية إلى "مبيعات عامة" مع الابتعاد تماماً عن تحديد العملية إلى أرصدة
+            </div>
         <div class="custom-select">
             نوع العملية:
             <select id="RecordType" name="RecordType" onchange="vh(this.value)" >
@@ -76,7 +79,7 @@
             </div>
         <div id="actP" class="form-group" style="display: none" >
             <label for="ActivePrice">رسوم التفعيل:<span  id="RL" class="required-label"></span></label>
-            <input type="number" id="ActivePrice" name="ActivePrice" value="1">
+            <input type="number" id="ActivePrice" name="ActivePrice" value="0">
         </div>
 
         <div class="form-group">

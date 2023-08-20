@@ -11,13 +11,13 @@
 
 <div class="container">
 
-    @if(Session::has('success'))
+     @if(Session::has('success'))
         <div class="alert alert-success" role="alert">
             {{ Session::get('success') }}
         </div>
-    @endif
+      @endif
 
-@if(Session::has('info'))
+        @if(Session::has('info'))
         <div class="alert alert-info" role="alert">
             {{ Session::get('info') }}
         </div>
@@ -45,7 +45,7 @@
             <input type="text" id="date" name="date" value="{{$date}}" placeholder="من" readonly>
 
             <div class="date-label">
-                <label for="date-from"> :حدد اليوم </label>
+                <label for="date-from"> حدد اليوم: </label>
             </div>
 
 

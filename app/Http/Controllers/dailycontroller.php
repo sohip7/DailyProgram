@@ -552,12 +552,12 @@ class DailyController extends Controller
                 مبلغ الدَين الاجمالي : $request->amount",
             ]);
         }
-        if($request->RecordType == 'General' and !$firstpay_rec){
-            return redirect()->route('Loans.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم إتاحته قريبا، يرجى إبلاغ المطور']);
-
-        }
+//        if($request->RecordType == 'General' and !$balance_inout and !$firstpay_rec ){
+//
+//
+//        }
         if($request->RecordType != 'General' and $request->RecordType != 'installment_transaction' and !$balance_inout){
-            return redirect()->route('Loans.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم إتاحته قريبا، يرجى إبلاغ المطور']);
+            return redirect()->route('Loans.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم إتاحته قريبا، يرجى إبلاغ المطور | كود الخطأ 1']);
 
         }
         if ($request->RecordType != 'General' and $request->RecordType != 'installment_transaction') {
@@ -568,7 +568,7 @@ class DailyController extends Controller
                 'updated_By' => $user_data->name
             ]);
         }
-        if ($request->RecordType == 'General' or $request->RecordType == 'installment_transaction' ){
+        if ($request->RecordType == 'General' or $request->RecordType == 'installment_transaction' and $balance_inout){
             if($balance_inout){
             $balance_inout->update([
                 'deleted_by' => $user_data->name
@@ -603,18 +603,24 @@ class DailyController extends Controller
     /************************************ Outs *****************************/
     public function OutsDelete(Request $request){
         $user_data = Auth::user();
-        $Outs = Outs::find($request -> id);   // $Sales::where('id','') -> first();
+        $Outs = Outs::find($request -> id);
+        $balance_inout=balance_inout::where('outs_foreign_id',$request -> id);
 
         if (!$Outs){
             return redirect()->back()->with(['error' => ('لم يتم إيجاد الصف في قاعدة البيانات')]);
-        }else {
-            $Outs->update([
+        }elseif($balance_inout) {
+
+            $balance_inout->update([
                 'deleted_by' => $user_data->name
             ]);
-            $Outs->delete();
+            $balance_inout->delete();
 
-            return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
         }
+        $Outs->update([
+            'deleted_by' => $user_data->name
+        ]);
+        $Outs->delete();
+        return redirect()->back()->with(['success' => 'تم حذف البيان بنجاح ']);
     }
 
 
@@ -723,6 +729,38 @@ class DailyController extends Controller
 
 
         //update data
+
+        if($request->RecordType!='General' and !$balance_inout)
+            return redirect()->route('Purchases.show')->with(['Error' => 'هذا التعديل غير مدعوم حالياً، سيتم دعمه قريباً، يرجى إعلام المطور | كود الخطأ:1']);
+
+        if($request->RecordType!='General' and $balance_inout){
+            if($request->RecordType=='Electricity'){
+                $balance_inout->update([
+                    'amount'=> $request->amount + ($request->amount* (15/1000)),
+                    'platform_name'=> $request->RecordType,
+                    'updated_By'=> $user_data->name
+                ]);
+            }
+            if($request->RecordType=='Ooredoo') {
+
+                $balance_inout->update([
+                    'amount'=> $request->amount + ($request->amount* (40/1000)),
+                    'platform_name' => $request->RecordType,
+                    'updated_By' => $user_data->name
+                ]);
+            } elseif($request->RecordType!='General' and $request->RecordType!='Ooredoo'and $request->RecordType!='Electricity' and $balance_inout){
+            $balance_inout->update([
+            'amount'=> $request->amount,
+            'platform_name'=> $request->RecordType,
+            'updated_By'=> $user_data->name
+        ]);
+            }
+        }elseif ($request->RecordType=='General' and $balance_inout) {
+            $balance_inout->update([
+                'deleted_by' => $user_data->name
+            ]);
+            $balance_inout->delete();
+        }
         $Purchases->update([
             'item'=> $request->item_name,
             'amount'=> $request->amount,
@@ -732,19 +770,6 @@ class DailyController extends Controller
             'user_name'=> $user_data->name,
             'updated_By'=> $user_data->name
         ]);
-        if($request->RecordType!='General'){
-        $balance_inout->update([
-            'amount'=> $request->amount,
-            'platform_name'=> $request->RecordType,
-            'updated_By'=> $user_data->name
-        ]);
-        }elseif ($request->RecordType=='General' and $balance_inout) {
-            $balance_inout->update([
-                'deleted_by' => $user_data->name
-            ]);
-            $balance_inout->delete();
-        }
-
 
 
 
@@ -903,7 +928,6 @@ class DailyController extends Controller
 
     public function StoreDealersBuy(Request $request){
         $user_data = Auth::user();
-
         $insertedId = DealersBuy::insertGetId([
             'item'=> $request->item_name,
             'amount'=> $request->amount,
@@ -920,7 +944,7 @@ class DailyController extends Controller
                     'record_type'=>'مدخل',
                     'platform_name'=>$selectedValue, //Ooredoo
                     'purchases_foreign_id'=>$insertedId,
-                    'amount'=> $request->amount,
+                    'amount'=> $request->amount +($request->amount * (40/1000) ),
                     'notes'=>"شحن المنصة من تاجر",
                     'created_by'=>$user_data->name
                 ]);
@@ -963,7 +987,7 @@ class DailyController extends Controller
                     'record_type'=>'مدخل',
                     'platform_name'=>$selectedValue, //Electricity
                     'purchases_foreign_id'=>$insertedId,
-                    'amount'=> $request->amount,
+                    'amount'=> $request->amount +($request->amount * (15/1000) ),
                     'notes'=>"شحن المنصة من تاجر",
                     'created_by'=>$user_data->name
                 ]);
@@ -1730,7 +1754,7 @@ class DailyController extends Controller
         $dailyEntireTotal=$DailySalesTotal+$CustomerPayTotal;
 
         #Outs
-       $OutsTotal=Outs::whereDate('created_at', today())->sum('amount');
+       $OutsTotal=Outs::whereDate('created_at', today())->where('service_number', '<>', '1')->sum('amount');
 
        #Final
        $finalBalance=$dailyEntireTotal-$OutsTotal;
